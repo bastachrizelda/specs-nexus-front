@@ -105,7 +105,7 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
       setPreviewUrl('');
       setErrors({});
     }
-  }, [initialEvent, show]);
+  }, [initialEvent, show, getManilaDateTime]);
 
   const resetForm = () => {
     const manilaDateTime = getManilaDateTime();
@@ -478,7 +478,7 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
             </button>
             <img
               src={imageModal.imageUrl}
-              alt="Full-size Event Image"
+              alt="Full-size event preview"
               className="z-image-modal-content"
             />
           </div>

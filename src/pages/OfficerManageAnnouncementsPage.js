@@ -13,14 +13,6 @@ import Loading from '../components/Loading';
 import StatusModal from '../components/StatusModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import '../styles/OfficerManageAnnouncementsPage.css';
-
-const backendBaseUrl = 'https://specs-nexus.onrender.com';
-
-const API_URL =
-  process.env.REACT_APP_API_URL ||
-  (typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost'
-    ? 'http://localhost:8000'
-    : backendBaseUrl);
     
 const OfficerManageAnnouncementsPage = () => {
   const [officer, setOfficer] = useState(null);
@@ -278,7 +270,6 @@ const OfficerManageAnnouncementsPage = () => {
     <OfficerLayout>
       <div className="announcements-page">
         <div className="announcements-header">
-          <h1>Manage Announcements</h1>
           <div className="announcements-controls">
             <div className="announcements-toggle">
               <button

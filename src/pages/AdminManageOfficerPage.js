@@ -38,6 +38,7 @@ const AdminManageOfficerPage = () => {
     message: '',
     onConfirm: null,
     isLoading: false,
+    type: 'default',
   });
 
   const currentAdmin = JSON.parse(localStorage.getItem('officerInfo') || '{}');
@@ -48,7 +49,10 @@ const AdminManageOfficerPage = () => {
       const [officersData, usersData] = await Promise.all([getOfficers(), getUsers()]);
       const filteredOfficers = officersData.filter((officer) => officer.id !== currentAdmin.id);
       setOfficers(filteredOfficers);
-      setUsers(usersData);
+      // Filter out users who are already officers
+      const officerUserIds = new Set(officersData.map(officer => officer.user_id));
+      const nonOfficerUsers = usersData.filter(user => !officerUserIds.has(user.id));
+      setUsers(nonOfficerUsers);
     } catch (error) {
       console.error('Failed to fetch data:', error);
       setStatusModal({
@@ -74,9 +78,10 @@ const AdminManageOfficerPage = () => {
     setConfirmationModal({
       isOpen: true,
       title: 'Demote Officer Status',
-      message: 'Are you sure you want to demote this officer’s status? This action cannot be undone.',
+      message: "Are you sure you want to demote this officer's status? This action cannot be undone.",
       onConfirm: () => confirmRevoke(officerId),
       isLoading: false,
+      type: 'danger',
     });
   };
 
@@ -120,6 +125,7 @@ const AdminManageOfficerPage = () => {
       message: `Are you sure you want to demote the officer status of ${selectedOfficerIds.length} officer(s)? This action cannot be undone.`,
       onConfirm: confirmBulkRevoke,
       isLoading: false,
+      type: 'danger',
     });
   };
 
@@ -171,6 +177,7 @@ const AdminManageOfficerPage = () => {
           setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
         },
         isLoading: false,
+        type: 'default',
       });
     } else {
       setSelectedOfficerIds([]);
@@ -188,6 +195,7 @@ const AdminManageOfficerPage = () => {
           setConfirmationModal((prev) => ({ ...prev, isOpen: false }));
         },
         isLoading: false,
+        type: 'default',
       });
     } else {
       setSelectedUserIds([]);
@@ -228,17 +236,28 @@ const AdminManageOfficerPage = () => {
       message: `Are you sure you want to promote ${selectedUserIds.length} student(s) to officers?`,
       onConfirm: confirmPromote,
       isLoading: false,
+      type: 'success',
     });
   };
 
   const confirmPromote = async () => {
     setConfirmationModal((prev) => ({ ...prev, isLoading: true }));
     try {
-      await createOfficersBulk(selectedUserIds, 'Officer');
+      const result = await createOfficersBulk(selectedUserIds, 'Officer');
+      if (result.length === 0) {
+        setConfirmationModal((prev) => ({ ...prev, isOpen: false, isLoading: false }));
+        setStatusModal({
+          isOpen: true,
+          title: 'No Students Promoted',
+          message: 'Selected students are already officers or could not be promoted.',
+          type: 'error',
+        });
+        return;
+      }
       setStatusModal({
         isOpen: true,
         title: 'Students Promoted',
-        message: 'Selected students have been promoted to officers successfully!',
+        message: `${result.length} student(s) have been promoted to officers successfully!`,
         type: 'success',
       });
       setShowUserModal(false);
@@ -254,7 +273,7 @@ const AdminManageOfficerPage = () => {
       setStatusModal({
         isOpen: true,
         title: 'Error Promoting Students',
-        message: error.response?.data?.message || 'Failed to promote selected students to officers. Please try again.',
+        message: error.response?.data?.detail || 'Failed to promote selected students to officers. Please try again.',
         type: 'error',
       });
     }
@@ -612,8 +631,7 @@ const AdminManageOfficerPage = () => {
           message={confirmationModal.message}
           confirmText="Confirm"
           cancelText="Cancel"
-          type="danger"
-          icon="fa-exclamation-triangle"
+          type={confirmationModal.type || 'default'}
           isLoading={confirmationModal.isLoading}
         />
       </main>

@@ -9,7 +9,6 @@ import {
   updateOfficerRequirement,
   deleteOfficerRequirement,
   uploadOfficerQRCode,
-  getQRCode,
   createOfficerRequirement,
 } from '../services/officerMembershipService';
 import OfficerMembershipModal from '../components/OfficerMembershipModal';
@@ -53,6 +52,7 @@ const OfficerManageMembershipPage = () => {
     message: '',
     onConfirm: null,
     isLoading: false,
+    type: 'default',
   });
 
   const token = localStorage.getItem('officerAccessToken');
@@ -140,6 +140,7 @@ const OfficerManageMembershipPage = () => {
           }
         },
         isLoading: false,
+        type: 'success',
       });
     }
   };
@@ -177,6 +178,7 @@ const OfficerManageMembershipPage = () => {
         }
       },
       isLoading: false,
+      type: 'danger',
     });
   };
 
@@ -285,6 +287,7 @@ const OfficerManageMembershipPage = () => {
         }
       },
       isLoading: false,
+      type: 'danger',
     });
   };
 
@@ -633,7 +636,7 @@ const OfficerManageMembershipPage = () => {
           message={confirmationModal.message}
           confirmText="Confirm"
           cancelText="Cancel"
-          type="danger"
+          type={confirmationModal.type || 'default'}
           isLoading={confirmationModal.isLoading}
         />
       </div>

@@ -458,7 +458,6 @@ const OfficerManageEventsPage = () => {
     <OfficerLayout>
       <div className="events-page">
         <div className="events-header">
-          <h1>Manage Events</h1>
           <div className="events-controls">
             <div className="events-toggle">
               <button
