@@ -184,7 +184,6 @@ const EventsPage = () => {
     <Layout user={user}>
       <div className="events-page">
         <div className="events-header">
-          <h1>Community Events</h1>
           <div className="events-filters">
             <button
               className={`filter-btn ${filter === 'all' ? 'active' : ''}`}

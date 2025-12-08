@@ -117,7 +117,9 @@ const OfficerManageMembershipPage = () => {
         onConfirm: async () => {
           setConfirmationModal((prev) => ({ ...prev, isLoading: true }));
           try {
-            await verifyOfficerMembership(membershipId, action, null, token);
+            const officerInfo = JSON.parse(localStorage.getItem('officerInfo') || '{}');
+            const officerName = officerInfo.full_name || 'Unknown Officer';
+            await verifyOfficerMembership(membershipId, action, null, token, officerName);
             await fetchData();
             setConfirmationModal((prev) => ({ ...prev, isOpen: false, isLoading: false }));
             setStatusModal({
@@ -150,7 +152,9 @@ const OfficerManageMembershipPage = () => {
       onConfirm: async () => {
         setConfirmationModal((prev) => ({ ...prev, isLoading: true }));
         try {
-          await verifyOfficerMembership(selectedMembershipId, 'deny', denialReason, token);
+          const officerInfo = JSON.parse(localStorage.getItem('officerInfo') || '{}');
+          const officerName = officerInfo.full_name || 'Unknown Officer';
+          await verifyOfficerMembership(selectedMembershipId, 'deny', denialReason, token, officerName);
           await fetchData();
           setConfirmationModal((prev) => ({ ...prev, isOpen: false, isLoading: false }));
           setStatusModal({
@@ -485,6 +489,7 @@ const OfficerManageMembershipPage = () => {
                 <th>Payment Type</th>
                 <th>Payment Date</th>
                 <th>Approval Date</th>
+                <th>Approved By</th>
                 {activeTab === 'verifying' && <th>Receipt</th>}
                 <th>Status</th>
                 {activeTab === 'verifying' && <th>Verification</th>}
@@ -524,6 +529,7 @@ const OfficerManageMembershipPage = () => {
                           })
                         : '-'}
                     </td>
+                    <td>{m.approved_by || '-'}</td>
                     {activeTab === 'verifying' && (
                       <td>
                         {m.receipt_path ? (
@@ -570,7 +576,7 @@ const OfficerManageMembershipPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={activeTab === 'verifying' ? 11 : 8} style={{ textAlign: 'center', padding: '2rem' }}>
+                  <td colSpan={activeTab === 'verifying' ? 12 : 9} style={{ textAlign: 'center', padding: '2rem' }}>
                     No memberships found.
                   </td>
                 </tr>

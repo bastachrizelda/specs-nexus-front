@@ -92,6 +92,19 @@ const MembershipModal = ({ membership, onClose, onReceiptUploaded }) => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Check file size limit (5MB)
+      const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSizeBytes) {
+        setQrError("File size must not exceed 5MB.");
+        setSelectedReceipt(null);
+        if (!currentMembership.receipt_path) {
+          setReceiptPreviewUrl(null);
+        }
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
       // Restrict to PNG and JPEG only
       const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
       if (!allowedTypes.includes(file.type.toLowerCase())) {
@@ -432,6 +445,7 @@ const MembershipModal = ({ membership, onClose, onReceiptUploaded }) => {
                 <div className="upload-label">
                   {currentMembership.receipt_path ? 'Upload New Payment Receipt' : 'Upload Payment Receipt'}
                 </div>
+                <p className="upload-hint">PNG or JPEG only. Max file size: 5MB</p>
                 <button 
                   className="upload-button" 
                   onClick={handleUploadClick} 

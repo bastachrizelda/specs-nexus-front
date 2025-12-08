@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 .events-page {
   max-width: 1280px;
   margin: 0 auto;
@@ -15,9 +17,9 @@
 
 .events-header h1 {
   font-size: 25.2px;
-    font-weight: 700;
-    color: #333;
-    margin: 0;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
 }
 
 .events-filters {
@@ -29,21 +31,23 @@
 .filter-btn {
   background-color: #f1f1f1;
   border: none;
-  border-radius: 18px; /* Reduced from 20px */
-  padding: 7.2px 14.4px; /* Reduced from 8px 16px */
-  font-size: 12.6px; /* Reduced from 14px */
+  border-radius: 18px;
+  padding: 8px 18px !important;
+  font-size: 15px !important;
   font-weight: 600;
-  color: #555;
+  color: #2d5641;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .filter-btn:hover {
-  background-color: #e0e0e0;
+  background-color: #253f21!important;
+  color: #ffffff !important;
 }
 
 .filter-btn.active {
-  background-color: #2d5641;
+  background-color: #0e3f18 !important;
   color: white;
 }
 

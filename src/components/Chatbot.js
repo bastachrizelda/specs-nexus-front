@@ -21,59 +21,127 @@ const capitalizeName = (name) => {
     .join(' ');
 };
 
+// Utility function to parse inline markdown (bold, italic)
+const parseInlineMarkdown = (text, keyPrefix = '') => {
+  if (!text) return text;
+  
+  // Split by bold (**text**) and italic (*text* or _text_)
+  const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_)/g);
+  
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={`${keyPrefix}-${i}`}>{part.slice(2, -2)}</strong>;
+    }
+    if ((part.startsWith('*') && part.endsWith('*')) || (part.startsWith('_') && part.endsWith('_'))) {
+      return <em key={`${keyPrefix}-${i}`}>{part.slice(1, -1)}</em>;
+    }
+    return part;
+  });
+};
+
 // Utility function to parse markdown-like text and render as JSX
 const parseMessageText = (text) => {
+  if (!text) return <p>No response</p>;
+  
   const lines = text.split('\n');
   const elements = [];
-  let currentList = null;
+  let listItems = [];
+  let listType = null; // 'ul' or 'ol'
+
+  const flushList = (index) => {
+    if (listItems.length > 0) {
+      if (listType === 'ol') {
+        elements.push(<ol key={`ol-${index}`} className="chat-list">{listItems}</ol>);
+      } else {
+        elements.push(<ul key={`ul-${index}`} className="chat-list">{listItems}</ul>);
+      }
+      listItems = [];
+      listType = null;
+    }
+  };
 
   lines.forEach((line, index) => {
-    // Handle headings (## Heading ##)
-    if (line.startsWith('##') && line.endsWith('##')) {
-      const headingText = line.slice(2, -2).trim();
-      elements.push(<h3 key={index} className="chat-heading">{headingText}</h3>);
-      currentList = null; // Reset list context
+    const trimmedLine = line.trim();
+    
+    // Skip empty lines but flush list
+    if (!trimmedLine) {
+      flushList(index);
       return;
     }
 
-    // Handle bullet points (  - Text)
-    if (line.startsWith('  -')) {
-      const bulletText = line.slice(3).trim();
-      // Parse bold text within bullet points (**Text**)
-      const parts = bulletText.split(/(\*\*[^\*]+\*\*)/g).map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={i}>{part.slice(2, -2)}</strong>;
-        }
-        return part;
-      });
+    // Handle headings (### Heading, ## Heading, # Heading)
+    const headingMatch = trimmedLine.match(/^(#{1,3})\s+(.+?)(?:\s*#{1,3})?$/);
+    if (headingMatch) {
+      flushList(index);
+      const level = headingMatch[1].length;
+      const headingText = headingMatch[2].trim();
+      const HeadingTag = level === 1 ? 'h2' : level === 2 ? 'h3' : 'h4';
+      elements.push(
+        <HeadingTag key={index} className="chat-heading">
+          {parseInlineMarkdown(headingText, `h-${index}`)}
+        </HeadingTag>
+      );
+      return;
+    }
 
-      if (!currentList) {
-        currentList = [];
-        elements.push(<ul key={`ul-${index}`} className="chat-list">{currentList}</ul>);
+    // Handle unordered list items (- item, * item, • item)
+    const ulMatch = trimmedLine.match(/^[-*•]\s+(.+)$/);
+    if (ulMatch) {
+      if (listType !== 'ul') {
+        flushList(index);
+        listType = 'ul';
       }
-      currentList.push(<li key={index} className="chat-bullet">{parts}</li>);
+      listItems.push(
+        <li key={index} className="chat-bullet">
+          {parseInlineMarkdown(ulMatch[1], `li-${index}`)}
+        </li>
+      );
       return;
     }
 
-    // Handle bold text in plain lines (**Text**)
-    if (line.includes('**')) {
-      const parts = line.split(/(\*\*[^\*]+\*\*)/g).map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={i}>{part.slice(2, -2)}</strong>;
-        }
-        return part;
-      });
-      elements.push(<p key={index} className="chat-paragraph">{parts}</p>);
-      currentList = null; // Reset list context
+    // Handle ordered list items (1. item, 2. item)
+    const olMatch = trimmedLine.match(/^(\d+)[.)]\s+(.+)$/);
+    if (olMatch) {
+      if (listType !== 'ol') {
+        flushList(index);
+        listType = 'ol';
+      }
+      listItems.push(
+        <li key={index} className="chat-bullet">
+          {parseInlineMarkdown(olMatch[2], `li-${index}`)}
+        </li>
+      );
       return;
     }
 
-    // Handle plain text
-    if (line.trim()) {
-      elements.push(<p key={index} className="chat-paragraph">{line.trim()}</p>);
-      currentList = null; // Reset list context
+    // Handle indented bullet points (  - item)
+    const indentedMatch = line.match(/^\s{2,}[-*•]\s+(.+)$/);
+    if (indentedMatch) {
+      if (listType !== 'ul') {
+        flushList(index);
+        listType = 'ul';
+      }
+      listItems.push(
+        <li key={index} className="chat-bullet chat-indent">
+          {parseInlineMarkdown(indentedMatch[1], `li-${index}`)}
+        </li>
+      );
+      return;
     }
+
+    // Flush any pending list before adding paragraph
+    flushList(index);
+
+    // Handle regular paragraph with inline formatting
+    elements.push(
+      <p key={index} className="chat-paragraph">
+        {parseInlineMarkdown(trimmedLine, `p-${index}`)}
+      </p>
+    );
   });
+
+  // Flush any remaining list items
+  flushList(lines.length);
 
   return elements.length > 0 ? elements : <p>{text}</p>;
 };

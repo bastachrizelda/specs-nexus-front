@@ -198,25 +198,40 @@
 .chat-heading {
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  font-size: 16px;
-  margin: 8px 0;
+  font-size: 15px;
+  margin: 10px 0 6px 0;
   color: #253f21;
+  line-height: 1.3;
+}
+
+.chat-heading:first-child {
+  margin-top: 0;
 }
 
 .chat-list {
   list-style-type: none;
   padding: 0;
-  margin: 8px 0;
+  margin: 6px 0;
+}
+
+ol.chat-list {
+  list-style-type: decimal;
+  padding-left: 20px;
+}
+
+ol.chat-list .chat-bullet::before {
+  display: none;
 }
 
 .chat-bullet {
   font-family: 'Poppins', sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  color: #000000;
+  font-size: 13px;
+  color: #333;
   margin: 4px 0;
-  padding-left: 20px;
+  padding-left: 16px;
   position: relative;
+  line-height: 1.4;
 }
 
 .chat-bullet::before {
@@ -224,20 +239,34 @@
   position: absolute;
   left: 0;
   color: #253f21;
-  font-size: 18px;
+  font-size: 14px;
+}
+
+.chat-bullet.chat-indent {
+  margin-left: 12px;
 }
 
 .chat-paragraph {
   font-family: 'Poppins', sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  color: #000000;
+  font-size: 13px;
+  color: #333;
   margin: 4px 0;
+  line-height: 1.5;
+}
+
+.chat-paragraph:first-child {
+  margin-top: 0;
 }
 
 .chat-bubble strong {
   font-weight: 600;
   color: #253f21;
+}
+
+.chat-bubble em {
+  font-style: italic;
+  color: #555;
 }
 
 .chatbot-input {

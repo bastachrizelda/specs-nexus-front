@@ -36,6 +36,32 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
   // Function to get current date and time in Manila time zone
   const getManilaDateTime = () => {
     const now = new Date();
+    return formatDateToManilaInput(now);
+  };
+
+  // Function to convert a date string or Date object to Manila timezone for datetime-local input
+  // If the date string has no timezone info, treat it as already in Manila time
+  const formatDateToManilaInput = (dateInput) => {
+    if (!dateInput) return '';
+    
+    // If it's already a string in YYYY-MM-DDTHH:MM format without timezone, use it directly
+    if (typeof dateInput === 'string') {
+      // Check if it has timezone info (Z or +/- offset)
+      const hasTimezone = /[Z]|[+-]\d{2}:\d{2}$/.test(dateInput);
+      
+      if (!hasTimezone) {
+        // No timezone info - treat as already in Manila time, just extract the datetime part
+        const match = dateInput.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/);
+        if (match) {
+          return match[1];
+        }
+      }
+    }
+    
+    // Has timezone info or is a Date object - convert to Manila time
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    if (isNaN(date.getTime())) return '';
+    
     const formatter = new Intl.DateTimeFormat('en-CA', {
       timeZone: 'Asia/Manila',
       year: 'numeric',
@@ -45,12 +71,14 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
       minute: '2-digit',
       hour12: false,
     });
-    const parts = formatter.formatToParts(now);
+    const parts = formatter.formatToParts(date);
     const year = parts.find((part) => part.type === 'year').value;
     const month = parts.find((part) => part.type === 'month').value;
     const day = parts.find((part) => part.type === 'day').value;
-    const hour = parts.find((part) => part.type === 'hour').value;
+    let hour = parts.find((part) => part.type === 'hour').value;
     const minute = parts.find((part) => part.type === 'minute').value;
+    // Handle midnight case (hour 24 should be 00)
+    if (hour === '24') hour = '00';
     return `${year}-${month}-${day}T${hour}:${minute}`;
   };
 
@@ -58,10 +86,10 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
     if (initialEvent) {
       setTitle(initialEvent.title || '');
       setDescription(initialEvent.description || '');
-      setDateTime(initialEvent.date ? initialEvent.date.slice(0, 16) : '');
+      setDateTime(formatDateToManilaInput(initialEvent.date));
       setLocation(initialEvent.location || '');
-      setRegistrationStart(initialEvent.registration_start ? initialEvent.registration_start.slice(0, 16) : '');
-      setRegistrationEnd(initialEvent.registration_end ? initialEvent.registration_end.slice(0, 16) : initialEvent.date ? initialEvent.date.slice(0, 16) : '');
+      setRegistrationStart(formatDateToManilaInput(initialEvent.registration_start));
+      setRegistrationEnd(formatDateToManilaInput(initialEvent.registration_end) || formatDateToManilaInput(initialEvent.date));
       setImageFile(null);
       setPreviewUrl(initialEvent.image_url || '');
       setErrors({});
@@ -207,10 +235,11 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
-      formData.append('date', new Date(dateTime).toISOString());
+      // Send datetime as-is (Manila time) - backend stores without timezone
+      formData.append('date', dateTime + ':00');
       formData.append('location', location);
-      formData.append('registration_start', new Date(registrationStart).toISOString());
-      formData.append('registration_end', new Date(registrationEnd).toISOString());
+      formData.append('registration_start', registrationStart + ':00');
+      formData.append('registration_end', registrationEnd + ':00');
 
       if (imageFile) {
         const sanitizedFileName = imageFile.name.replace(/\s+/g, '_');

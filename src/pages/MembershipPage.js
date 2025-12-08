@@ -191,6 +191,13 @@ const MembershipPage = () => {
                   </span>
                 </div>
               )}
+
+              {membership.payment_status?.toLowerCase() === 'paid' && membership.approved_by && (
+                <div className="detail-item">
+                  <span className="detail-label">Approved By:</span>
+                  <span className="detail-value">{membership.approved_by}</span>
+                </div>
+              )}
             </div>
 
             {membership.denial_reason && (

@@ -34,10 +34,13 @@ export async function createOfficerMembership(formData, token) {
   return response.data;
 }
 
-export async function verifyOfficerMembership(membershipId, action, denialReason, token) {
+export async function verifyOfficerMembership(membershipId, action, denialReason, token, officerName) {
   const payload = { action };
   if (denialReason) {
     payload.denial_reason = denialReason;
+  }
+  if (officerName) {
+    payload.officer_name = officerName;
   }
   const response = await apiClient.put(`/membership/officer/verify/${membershipId}`, payload, {
     headers: { Authorization: `Bearer ${token}` },

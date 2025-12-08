@@ -84,8 +84,6 @@ const AnnouncementsPage = () => {
       return announcements.filter(
         (a) => a.date && new Date(a.date) >= thirtyDaysAgo
       );
-    } else if (filter === 'featured') {
-      return announcements.filter((a) => a.featured === true);
     }
     return announcements;
   };
@@ -104,8 +102,6 @@ const AnnouncementsPage = () => {
   return (
     <Layout user={user}>
       <div className="announcements-page">
-        <div className="announcements-header">
-          <h1>SPECS Announcements</h1>
           <div className="announcements-filters">
             <button
               className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
@@ -119,14 +115,8 @@ const AnnouncementsPage = () => {
             >
               Recent
             </button>
-            <button
-              className={`filter-btn ${filter === 'featured' ? 'active' : ''}`}
-              onClick={() => setFilter('featured')}
-            >
-              Featured
-            </button>
           </div>
-        </div>
+    
 
         <div className="announcements-section">
           {isAnnouncementsLoading ? (

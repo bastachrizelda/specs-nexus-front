@@ -36,6 +36,20 @@ const OfficerLoginPage = () => {
 
   return (
     <div className="login-page">
+      {/* decorative bubbles (matches CSS: bubble1..bubble10) */}
+      <div className="bubbles" aria-hidden="true">
+        <div className="bubble bubble1" />
+        <div className="bubble bubble2" />
+        <div className="bubble bubble3" />
+        <div className="bubble bubble4" />
+        <div className="bubble bubble5" />
+        <div className="bubble bubble6" />
+        <div className="bubble bubble7" />
+        <div className="bubble bubble8" />
+        <div className="bubble bubble9" />
+        <div className="bubble bubble10" />
+      </div>
+
       <div className="top-elements">
         <div className="branding">
           <img src="/images/diamond_design.png" alt="SPECS Logo" className="header-logo" />

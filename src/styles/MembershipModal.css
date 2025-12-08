@@ -301,10 +301,16 @@
 }
 
 .upload-label {
-  margin-bottom: 9px;
+  margin-bottom: 4px;
   font-size: 14.4px;
   color: #444;
   font-weight: 500;
+}
+
+.upload-hint {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 9px;
 }
 
 .upload-button {
