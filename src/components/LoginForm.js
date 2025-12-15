@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { login } from '../services/authService';
 import { getProfile } from '../services/userService';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
@@ -25,7 +24,6 @@ const LoginForm = ({ onLoginSuccess }) => {
     try {
       const response = await login({ emailOrStudentNumber, password });
       const accessToken = response.access_token;
-      console.log('LoginForm: Login response:', { accessToken });
       
       if (!accessToken) {
         setError('Login failed: No access token received. Please try again.');
@@ -36,13 +34,11 @@ const LoginForm = ({ onLoginSuccess }) => {
       try {
         const profile = await getProfile(accessToken);
         const userId = profile.id;
-        console.log('LoginForm: Profile fetched:', { userId });
         
         localStorage.setItem('access_token', accessToken);
         localStorage.setItem('user_id', userId);
         onLoginSuccess(accessToken, userId);
       } catch (profileErr) {
-        console.error('LoginForm: Profile fetch error:', profileErr);
         // If profile fetch fails but we have a token, still try to proceed
         if (accessToken) {
           localStorage.setItem('access_token', accessToken);

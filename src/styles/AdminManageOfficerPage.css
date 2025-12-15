@@ -1,4 +1,5 @@
-/* Harmonious AdminManageOfficerPage.css - Color Palette Based on #2d5641 */
+/* Harmonious AdminManageOfficerPage.css - Student Side Aligned */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 /* Root Variables - Harmonious Color Palette */
 :root {
@@ -43,16 +44,16 @@
   --gray-900: #1a1e1a;
   --white: #ffffff;
 
-  /* Shadows - Subtle Green Tint */
+  /* Shadows - Consistent with Student Side */
   --shadow-sm: 0 1px 2px 0 rgba(45, 86, 65, 0.05);
-  --shadow: 0 2px 4px 0 rgba(45, 86, 65, 0.08);
+  --shadow: 3px 2px 4px 2px rgba(84, 84, 84, 0.241);
   --shadow-md: 0 4px 8px -1px rgba(45, 86, 65, 0.08);
   --shadow-lg: 0 8px 16px -2px rgba(45, 86, 65, 0.08);
 
-  /* Border Radius */
+  /* Border Radius - Student Side Aligned */
   --radius: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
+  --radius-md: 18px;
+  --radius-lg: 30px;
 
   /* Typography */
   --font-size-xs: 0.75rem;
@@ -69,31 +70,34 @@
 
 /* Container */
 .z-container {
-  max-width: 1280px;
+  font-family: 'Poppins', sans-serif;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 8px 0;
+  min-height: 100%;
 }
 
 /* Main Card */
 .z-card {
   background: var(--white);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--gray-150);
+  box-shadow: var(--shadow);
+  border: 2px solid #828282;
+  border-left: 10px solid #253f21;
   overflow: hidden;
 }
 
 /* Header */
 .z-header {
-  padding: 1.5rem;
+  padding: 1.275rem 0.75rem;
   border-bottom: 1px solid var(--gray-150);
   background: var(--white);
 }
 
 .z-title {
-  font-size: var(--font-size-2xl);
+  font-size: 1.275rem;
   font-weight: 600;
-  color: var(--primary-color);
+  color: #1a2a44;
   margin: 0 0 1.5rem 0;
 }
 
@@ -103,10 +107,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  border-radius: var(--radius);
+  padding: 8px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
   border: 1px solid transparent;
   cursor: pointer;
   transition: var(--transition);
@@ -114,32 +118,33 @@
   white-space: nowrap;
   min-height: 44px;
   outline: none;
+  font-family: 'Poppins', sans-serif;
 }
 
 .z-btn-primary {
-  background: #1e8c54;
+  background: #2d5641;
   color: var(--white);
   border-color: var(--primary-color);
   box-shadow: var(--shadow-sm);
 }
 
 .z-btn-primary:hover {
-  background: var(--primary-hover);
+  background: #253f21;
   border-color: var(--primary-hover);
   box-shadow: var(--shadow);
   transform: translateY(-2px);
 }
 
 .z-btn-secondary {
-  background: var(--accent-color);
-  color: var(--white);
-  border-color: var(--accent-color);
+  background-color: #f1f1f1;
+  color: #2d5641;
+  border-color: transparent;
   box-shadow: var(--shadow-sm);
 }
 
 .z-btn-secondary:hover {
-  background: var(--accent-hover);
-  border-color: var(--accent-hover);
+  background: #253f21;
+  color: #ffffff;
   box-shadow: var(--shadow);
   transform: translateY(-2px);
 }
@@ -160,7 +165,7 @@
 
 .z-btn-ghost {
   background: transparent;
-  color: white;
+  color: #2d5641;
   border-color: var(--gray-300);
 }
 
@@ -432,6 +437,19 @@
   display: flex;
   gap: 0.75rem;
   align-items: center;
+}
+
+/* Ghost button in modal header - needs to be white */
+.z-modal-header .z-btn-ghost {
+  background: transparent;
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.z-modal-header .z-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: var(--white);
 }
 
 .z-modal-content {

@@ -8,7 +8,7 @@ import '../styles/ECertificatesPage.css';
 
 const backendBaseUrl = 'https://specs-nexus.onrender.com';
 
-const API_URL =
+const apiBaseUrl =
   process.env.REACT_APP_API_URL ||
   (typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost'
     ? 'http://localhost:8000'
@@ -26,7 +26,6 @@ const ECertificatesPage = () => {
   // Early token check
   useEffect(() => {
     if (!token) {
-      console.log('No access token found, redirecting to login');
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_id');
       navigate('/');
@@ -40,13 +39,9 @@ const ECertificatesPage = () => {
 
     async function fetchProfile() {
       try {
-        console.log('Fetching user profile...');
         const userData = await getProfile(token);
-        console.log('User profile fetched successfully:', userData);
         setUser(userData);
       } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-        console.log('Clearing storage and redirecting to login due to profile fetch error');
         localStorage.removeItem('access_token');
         localStorage.removeItem('user_id');
         navigate('/');
@@ -61,48 +56,69 @@ const ECertificatesPage = () => {
   useEffect(() => {
     if (!token) return;
 
+    let cancelled = false;
+
     async function fetchCertificates() {
       setIsCertificatesLoading(true);
       try {
-        const response = await fetch(`${backendBaseUrl}/events/certificates`, {
+        const response = await fetch(`${apiBaseUrl}/events/certificates`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
         if (!response.ok) throw new Error(`Failed to fetch certificates: ${response.status} ${response.statusText}`);
         const data = await response.json();
-        console.log('Certificates fetched:', data);
 
-        // Fetch thumbnails for each certificate
-        const certificatesWithThumbnails = await Promise.all(
-          data.map(async (certificate) => {
-            if (certificate.thumbnail_url) {
-              return certificate;
-            }
-            try {
-              const thumbnailResponse = await fetch(`${backendBaseUrl}/events/certificates/${certificate.id}/thumbnail`, {
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                },
-              });
-              if (!thumbnailResponse.ok) throw new Error(`Failed to fetch thumbnail: ${thumbnailResponse.status}`);
-              const thumbnailUrl = await thumbnailResponse.text();
-              return { ...certificate, thumbnail_url: thumbnailUrl };
-            } catch (error) {
-              console.error(`Failed to fetch thumbnail for certificate ${certificate.id}:`, error);
-              return { ...certificate, thumbnail_url: '/assets/pdf-placeholder.png' };
-            }
-          })
-        );
-
-        setCertificates(certificatesWithThumbnails);
+        if (cancelled) return;
+        // Render immediately (no blocking per-certificate thumbnail fetch)
+        setCertificates(Array.isArray(data) ? data : []);
       } catch (error) {
-        console.error('Error fetching certificates:', error);
+        // Certificate fetch failed silently
       } finally {
-        setIsCertificatesLoading(false);
+        if (!cancelled) setIsCertificatesLoading(false);
       }
     }
     fetchCertificates();
+
+    // Lazy thumbnail fetch in background (updates cards as thumbnails arrive)
+    const fetchMissingThumbnails = async () => {
+      try {
+        const response = await fetch(`${apiBaseUrl}/events/certificates`, {
+          headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (!Array.isArray(data) || cancelled) return;
+
+        await Promise.all(
+          data
+            .filter((c) => c && c.id && !c.thumbnail_url)
+            .map(async (certificate) => {
+              try {
+                const thumbnailResponse = await fetch(
+                  `${apiBaseUrl}/events/certificates/${certificate.id}/thumbnail`,
+                  { headers: { 'Authorization': `Bearer ${token}` } }
+                );
+                if (!thumbnailResponse.ok) return;
+                const thumbnailUrl = await thumbnailResponse.text();
+                if (cancelled) return;
+                setCertificates((prev) =>
+                  prev.map((c) => (c.id === certificate.id ? { ...c, thumbnail_url: thumbnailUrl } : c))
+                );
+              } catch (e) {
+                // Keep placeholder if thumbnail fails
+              }
+            })
+        );
+      } catch (e) {
+        // Ignore background thumbnail failures
+      }
+    };
+    fetchMissingThumbnails();
+
+    return () => {
+      cancelled = true;
+    };
   }, [token]);
 
   const handleCertificateClick = (certificate) => {
@@ -128,7 +144,6 @@ const ECertificatesPage = () => {
   // Get display URL for images (use thumbnail for PDFs)
   const getDisplayUrl = (certificate) => {
     if (!certificate.certificate_url) {
-      console.warn(`No certificate URL for certificate ${certificate.id}`);
       return '/assets/pdf-placeholder.png';
     }
     if (isPdf(certificate.certificate_url)) {
@@ -136,8 +151,7 @@ const ECertificatesPage = () => {
     }
     const url = certificate.certificate_url.startsWith("http")
       ? certificate.certificate_url
-      : `${backendBaseUrl}${certificate.certificate_url}`;
-    console.log(`Image URL for certificate ${certificate.id}: ${url}`);
+      : `${apiBaseUrl}${certificate.certificate_url}`;
     return url;
   };
 
@@ -146,7 +160,6 @@ const ECertificatesPage = () => {
   }
 
   if (!user) {
-    console.log('No user data, redirecting to login');
     return null;
   }
 

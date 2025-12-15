@@ -19,7 +19,6 @@ const MembershipPage = () => {
   // Early token check
   useEffect(() => {
     if (!token) {
-      console.log('No access token found, redirecting to login');
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_id');
       navigate('/');
@@ -32,13 +31,9 @@ const MembershipPage = () => {
 
     async function fetchProfile() {
       try {
-        console.log('Fetching user profile...');
         const userData = await getProfile(token);
-        console.log('User profile fetched successfully:', userData);
         setUser(userData);
       } catch (error) {
-        console.error('Failed to fetch profile:', error);
-        console.log('Clearing storage and redirecting to login due to profile fetch error');
         localStorage.removeItem('access_token');
         localStorage.removeItem('user_id');
         navigate('/');
@@ -120,7 +115,10 @@ const MembershipPage = () => {
   );
 
   const verifyingMemberships = memberships.filter(
-    (m) => m.payment_status?.trim().toLowerCase() === 'verifying'
+    (m) => {
+      const s = m.payment_status?.trim().toLowerCase();
+      return s === 'verifying' || s === 'pending';
+    }
   );
 
   const paidMemberships = memberships.filter(

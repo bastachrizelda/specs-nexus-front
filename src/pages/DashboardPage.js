@@ -18,12 +18,10 @@ const DashboardPage = () => {
       try {
         setLoading(true);
         if (!token) {
-          console.log('DashboardPage: No token, redirecting to /');
           navigate('/');
           return;
         }
         const userProfile = await getProfile(token);
-        console.log('DashboardPage: Profile fetched:', userProfile);
         setUser(userProfile);
         
         if (userProfile && userProfile.id) {
@@ -31,16 +29,14 @@ const DashboardPage = () => {
             const data = await getClearance(userProfile.id, token);
             setClearanceData(data);
           } catch (err) {
-            console.error('DashboardPage: Failed to fetch clearance:', err);
-            // Optionally display clearance error to user
+            // Clearance fetch failed silently
           }
         }
         
         setLoading(false);
       } catch (err) {
-        console.error('DashboardPage: Failed to fetch user profile:', err);
-        setLoading(false); // Ensure loading is set to false even on error
-        localStorage.removeItem('access_token'); // Clear correct key
+        setLoading(false);
+        localStorage.removeItem('access_token');
         localStorage.removeItem('user_id');
         navigate('/');
       }
@@ -49,14 +45,18 @@ const DashboardPage = () => {
     fetchUserProfile();
   }, [token, navigate]);
 
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/');
+    }
+  }, [loading, user, navigate]);
+
   const renderContent = () => {
     if (loading) {
       return <Loading message="Loading dashboard data..." />;
     }
 
     if (!user) {
-      console.log('DashboardPage: No user, redirecting to /');
-      navigate('/');
       return null;
     }
 
@@ -85,8 +85,8 @@ const DashboardPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {clearanceData.map((clearance) => (
-                    <tr key={clearance.id}>
+                  {clearanceData.map((clearance, index) => (
+                    <tr key={clearance.id ?? `${clearance.requirement ?? 'req'}-${index}`}>
                       <td>{clearance.requirement}</td>
                       <td className={clearance.status === 'Cleared' ? 'status-cleared' : 'status-not-cleared'}>
                         {clearance.status}

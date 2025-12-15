@@ -591,3 +591,62 @@
     max-height: 60vh;
   }
 }
+
+.reference-number-section {
+  margin-top: 10.8px;
+}
+
+.reference-number-label {
+  display: block;
+  font-size: 12.6px;
+  font-weight: 600;
+  color: #2c5e34;
+  margin-bottom: 6px;
+}
+
+.reference-number-input {
+  width: 100%;
+  padding: 9px 10.8px;
+  border: 1.8px solid #eaeaea;
+  border-radius: 9px;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reference-number-input:focus {
+  border-color: #43883e;
+  box-shadow: 0 0 0 2px rgba(67, 136, 62, 0.18);
+}
+
+.reference-number-input.input-error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.15);
+}
+
+.reference-number-input.input-error:focus {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+}
+
+.reference-number-hint {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.reference-number-error {
+  display: block;
+  font-size: 11px;
+  color: #dc3545;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.submit-receipt-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.7;
+}

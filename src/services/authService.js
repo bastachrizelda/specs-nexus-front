@@ -8,10 +8,6 @@ const API_URL =
     ? 'http://localhost:8000'
     : backendBaseUrl);
 
-// Log API URL for debugging
-if (typeof window !== 'undefined') {
-  console.log('API URL:', API_URL);
-}
 export const login = async ({ emailOrStudentNumber, password }) => {
   try {
     const response = await axios.post(`${API_URL}/auth/login`, { 

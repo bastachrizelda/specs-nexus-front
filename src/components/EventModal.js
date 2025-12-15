@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ConfirmationModal from './ConfirmationModal';
+import StatusModal from './StatusModal';
 import '../styles/EventModal.css';
 import '../styles/ConfirmationModal.css';
 
+const defaultBackendBaseUrl = 'https://specs-nexus.onrender.com';
+const API_URL =
+  process.env.REACT_APP_API_URL ||
+  (typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost'
+    ? 'http://localhost:8000'
+    : defaultBackendBaseUrl);
+
 const EventModal = ({ event, onClose, onParticipate, onNotParticipate, isOfficerView = false, show = false }) => {
   const [showFullImage, setShowFullImage] = useState(false);
+  const [attendanceData, setAttendanceData] = useState(null);
+  const [evaluationCompleted, setEvaluationCompleted] = useState(false);
   const [confirmationModal, setConfirmationModal] = useState({
     isOpen: false,
     type: 'default',
@@ -14,10 +24,73 @@ const EventModal = ({ event, onClose, onParticipate, onNotParticipate, isOfficer
     isLoading: false
   });
 
-  // Guard clause: Don't render if modal is not shown or event is invalid
-  if (!show || !event || !event.id) {
-    return null;
-  }
+  const [statusModal, setStatusModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    type: 'success'
+  });
+
+  // Fetch user's attendance status for this event
+  useEffect(() => {
+    if (!show || !event?.id || isOfficerView) return;
+
+    const fetchAttendanceStatus = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+
+        // Preferred: user endpoint that returns the current user's attendance info
+        const response = await fetch(`${API_URL}/events/${event.id}/my-attendance`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const attendance = await response.json();
+          setAttendanceData({
+            checked_in: !!attendance?.checked_in,
+            evaluation_completed: !!attendance?.evaluation_completed,
+          });
+          setEvaluationCompleted(!!attendance?.evaluation_completed);
+          return;
+        }
+
+        // Backward-compat fallback: older backend may not have /my-attendance
+        if (response.status === 404) {
+          const participantsRes = await fetch(`${API_URL}/events/${event.id}/participants`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (participantsRes.ok) {
+            const participants = await participantsRes.json();
+            const currentUserId = parseInt(localStorage.getItem('user_id'));
+            const userParticipant = participants.find(p => p.id === currentUserId);
+
+            const isCheckedIn = userParticipant?.attendance_status === 'present' || !!userParticipant?.checked_in_at;
+
+            setAttendanceData({
+              checked_in: !!isCheckedIn,
+              evaluation_completed: !!userParticipant?.evaluation_completed,
+            });
+            setEvaluationCompleted(!!userParticipant?.evaluation_completed);
+            return;
+          }
+        }
+
+        // Default if we can't determine attendance
+        setAttendanceData({ checked_in: false, evaluation_completed: false });
+      } catch (error) {
+        console.error('Failed to fetch attendance status:', error);
+        setAttendanceData({ checked_in: false, evaluation_completed: false });
+      }
+    };
+
+    fetchAttendanceStatus();
+  }, [show, event?.id, isOfficerView]);
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Not specified';
@@ -102,172 +175,247 @@ const EventModal = ({ event, onClose, onParticipate, onNotParticipate, isOfficer
     }
   };
 
+  const handleEvaluateClick = async () => {
+    if (!event.feedback_link) return;
+
+    window.open(event.feedback_link, '_blank');
+
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) return;
+
+      const response = await fetch(`${API_URL}/events/${event.id}/complete-evaluation`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setEvaluationCompleted(true);
+        setAttendanceData(prev => ({ ...prev, evaluation_completed: true }));
+        setStatusModal({
+          isOpen: true,
+          title: 'Evaluation Opened',
+          message: 'Thank you! Please complete the evaluation form that opened in a new tab.',
+          type: 'success'
+        });
+      }
+    } catch (error) {
+      console.error('Failed to mark evaluation as completed:', error);
+    }
+  };
+
   return (
     <>
-      <div className="event-modal-overlay" onClick={onClose}>
-        <div className="event-modal-container" onClick={e => e.stopPropagation()}>
-          {showFullImage && event.image_url && (
-            <div className="fullscreen-image-overlay" onClick={() => setShowFullImage(false)}>
-              <div className="fullscreen-image-container">
-                <button className="close-fullscreen" onClick={(e) => {
-                  e.stopPropagation();
-                  setShowFullImage(false);
-                }}>
-                  <i className="fas fa-times"></i>
-                </button>
-                <img
-                  src={
-                    event.image_url && event.image_url.startsWith("http")
-                      ? event.image_url
-                      : `https://specs-nexus-production.up.railway.app${event.image_url || ''}`
-                  }
-                  alt={event.title || 'Event'}
-                  className="fullscreen-image"
-                />
-              </div>
-            </div>
-          )}
-          <button className="close-modal" onClick={onClose} aria-label="Close modal">
-            <i className="fas fa-times"></i>
-          </button>
-
-          <div className="event-modal-header">
-            {event.image_url && (
-              <div className="event-image-container">
-                <img 
-                  src={
-                    event.image_url.startsWith("http")
-                      ? event.image_url
-                      : `https://specs-nexus-production.up.railway.app${event.image_url}`
-                  } 
-                  alt={event.title || 'Event'} 
-                  className="event-images"
-                  onClick={() => setShowFullImage(true)}
-                />
-                <div className={`event-status-badge status-${event.registration_status || 'closed'}`}>
-                  <i className={`fas ${getStatusIcon(event.registration_status || 'closed')}`}></i>
-                  {getRegistrationStatus(event.registration_status || 'closed')}
-                </div>
-                <div className="image-zoom-indicator">
-                  <i className="fas fa-search-plus"></i>
+      {show && (
+        <div className="event-modal-overlay" onClick={onClose}>
+          <div className="event-modal-container" onClick={e => e.stopPropagation()}>
+            {showFullImage && event.image_url && (
+              <div className="fullscreen-image-overlay" onClick={() => setShowFullImage(false)}>
+                <div className="fullscreen-image-container">
+                  <button className="close-fullscreen" onClick={(e) => {
+                    e.stopPropagation();
+                    setShowFullImage(false);
+                  }}>
+                    <i className="fas fa-times"></i>
+                  </button>
+                  <img
+                    src={
+                      event.image_url && event.image_url.startsWith("http")
+                        ? event.image_url
+                        : `https://specs-nexus-production.up.railway.app${event.image_url || ''}`
+                    }
+                    alt={event.title || 'Event'}
+                    className="fullscreen-image"
+                  />
                 </div>
               </div>
             )}
+            <button className="close-modal" onClick={onClose} aria-label="Close modal">
+              <i className="fas fa-times"></i>
+            </button>
 
-            <h2 className="event-title">{event.title || 'Untitled Event'}</h2>
-          </div>
-
-          <div className="event-modal-content">
-            <div className="event-meta">
-              <div className="event-meta-item">
-                <i className="fas fa-calendar-alt"></i>
-                <div>
-                  <span className="meta-label">Date & Time</span>
-                  <span className="meta-value">{formatDate(event.date)}</span>
-                </div>
-              </div>
-
-              <div className="event-meta-item">
-                <i className="fas fa-map-marker-alt"></i>
-                <div>
-                  <span className="meta-label">Location</span>
-                  <span className="meta-value">{event.location || 'Not specified'}</span>
-                </div>
-              </div>
-
-              <div className="event-meta-item">
-                <i className="fas fa-users"></i>
-                <div>
-                  <span className="meta-label">Attendees</span>
-                  <span className="meta-value">{event.participant_count || 0} registered</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="event-description-section">
-              <h3>About this event</h3>
-              <p className="event-description">{event.description || 'No description available'}</p>
-            </div>
-
-            <div className="event-registration-details">
-              <h3>Registration Information</h3>
-
-              <div className="registration-timeline">
-                {event.registration_start && (
-                  <div className="registration-timeline-item">
-                    <i className="fas fa-hourglass-start"></i>
-                    <div>
-                      <span className="timeline-label">Registration opens</span>
-                      <span className="timeline-date">{formatDate(event.registration_start)}</span>
-                    </div>
+            <div className="event-modal-header">
+              {event.image_url && (
+                <div className="event-image-container">
+                  <img 
+                    src={
+                      event.image_url.startsWith("http")
+                        ? event.image_url
+                        : `https://specs-nexus-production.up.railway.app${event.image_url}`
+                    } 
+                    alt={event.title || 'Event'} 
+                    className="event-images"
+                    onClick={() => setShowFullImage(true)}
+                  />
+                  <div className={`event-status-badge status-${event.registration_status || 'closed'}`}>
+                    <i className={`fas ${getStatusIcon(event.registration_status || 'closed')}`}></i>
+                    {getRegistrationStatus(event.registration_status || 'closed')}
                   </div>
-                )}
-
-                {event.registration_end && (
-                  <div className="registration-timeline-item">
-                    <i className="fas fa-hourglass-end"></i>
-                    <div>
-                      <span className="timeline-label">Registration closes</span>
-                      <span className="timeline-date">{formatDate(event.registration_end)}</span>
-                    </div>
+                  <div className="image-zoom-indicator">
+                    <i className="fas fa-search-plus"></i>
                   </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {!isOfficerView && (
-            <div className="event-modal-footer">
-              {event.is_participant && (
-                <div className="registered-status-banner">
-                  <i className="fas fa-check-circle"></i> You are registered for this event
                 </div>
               )}
 
-              <div className="registration-actions">
-                {event.registration_open ? (
-                  event.is_participant ? (
-                    <button 
-                      className="btn-not-participate" 
-                      onClick={handleCancelRegistrationClick}
-                    >
-                      <i className="fas fa-times-circle"></i> Cancel Registration
-                    </button>
-                  ) : (
-                    <button 
-                      className="btn-participate" 
-                      onClick={handleRegisterClick}
-                    >
-                      <i className="fas fa-calendar-check"></i> Register Now
-                    </button>
-                  )
-                ) : (
-                  <button className="btn-disabled" disabled>
-                    {event.registration_status === 'not_started' ? 
-                      <><i className="fas fa-clock"></i> Registration Not Open Yet</> : 
-                      <><i className="fas fa-ban"></i> Registration Closed</>
-                    }
-                  </button>
-                )}
+              <h2 className="event-title">{event.title || 'Untitled Event'}</h2>
+            </div>
+
+            <div className="event-modal-content">
+              <div className="event-meta">
+                <div className="event-meta-item">
+                  <i className="fas fa-calendar-alt"></i>
+                  <div>
+                    <span className="meta-label">Date & Time</span>
+                    <span className="meta-value">{formatDate(event.date)}</span>
+                  </div>
+                </div>
+
+                <div className="event-meta-item">
+                  <i className="fas fa-map-marker-alt"></i>
+                  <div>
+                    <span className="meta-label">Location</span>
+                    <span className="meta-value">{event.location || 'Not specified'}</span>
+                  </div>
+                </div>
+
+                <div className="event-meta-item">
+                  <i className="fas fa-users"></i>
+                  <div>
+                    <span className="meta-label">Attendees</span>
+                    <span className="meta-value">{event.participant_count || 0} registered</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="event-description-section">
+                <h3>About this event</h3>
+                <p className="event-description">{event.description || 'No description available'}</p>
+              </div>
+
+              <div className="event-registration-details">
+                <h3>Registration Information</h3>
+
+                <div className="registration-timeline">
+                  {event.registration_start && (
+                    <div className="registration-timeline-item">
+                      <i className="fas fa-hourglass-start"></i>
+                      <div>
+                        <span className="timeline-label">Registration opens</span>
+                        <span className="timeline-date">{formatDate(event.registration_start)}</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {event.registration_end && (
+                    <div className="registration-timeline-item">
+                      <i className="fas fa-hourglass-end"></i>
+                      <div>
+                        <span className="timeline-label">Registration closes</span>
+                        <span className="timeline-date">{formatDate(event.registration_end)}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          )}
+
+            {!isOfficerView && (
+              <div className="event-modal-footer">
+                {event.is_participant && (
+                  <div className="registered-status-banner">
+                    <i className="fas fa-check-circle"></i> You are registered for this event
+                  </div>
+                )}
+
+                {event.feedback_link && (
+                  <div className="evaluation-section">
+                    <div className="evaluation-banner">
+                      <i className="fas fa-clipboard-check"></i>
+                      <span>
+                        {evaluationCompleted 
+                          ? 'You have completed the evaluation - Thank you!'
+                          : attendanceData?.checked_in 
+                            ? event.evaluation_open === false
+                              ? 'Evaluation form will be available soon. Officer will enable it.'
+                              : 'Your attendance has been verified. Please complete the evaluation form.'
+                            : 'Complete the event and get your attendance verified to access evaluation.'}
+                      </span>
+                    </div>
+                    {!evaluationCompleted && (
+                      <button 
+                        className="btn-evaluate" 
+                        onClick={handleEvaluateClick}
+                        disabled={!attendanceData?.checked_in || event.evaluation_open === false}
+                        title={
+                          !attendanceData?.checked_in 
+                            ? 'You must be checked in first'
+                            : event.evaluation_open === false
+                              ? 'Evaluation form is not yet enabled by officers'
+                              : 'Click to open evaluation form'
+                        }
+                      >
+                        <i className="fas fa-external-link-alt"></i> Evaluate
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                <div className="registration-actions">
+                  {event.registration_open ? (
+                    event.is_participant ? (
+                      <button 
+                        className="btn-not-participate" 
+                        onClick={handleCancelRegistrationClick}
+                      >
+                        <i className="fas fa-times-circle"></i> Cancel Registration
+                      </button>
+                    ) : (
+                      <button 
+                        className="btn-participate" 
+                        onClick={handleRegisterClick}
+                      >
+                        <i className="fas fa-calendar-check"></i> Register Now
+                      </button>
+                    )
+                  ) : (
+                    <button className="btn-disabled" disabled>
+                      {event.registration_status === 'not_started' ? 
+                        <><i className="fas fa-clock"></i> Registration Not Open Yet</> : 
+                        <><i className="fas fa-ban"></i> Registration Closed</>
+                      }
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {!isOfficerView && (
-        <ConfirmationModal
-          isOpen={confirmationModal.isOpen}
-          onClose={handleConfirmationClose}
-          onConfirm={handleConfirmationConfirm}
-          title={confirmationModal.title}
-          message={confirmationModal.message}
-          confirmText={confirmationModal.action === 'register' ? 'Register' : 'Cancel Registration'}
-          cancelText="Go Back"
-          type={confirmationModal.type}
-          icon={confirmationModal.action === 'register' ? 'fa-calendar-check' : 'fa-times-circle'}
-          isLoading={confirmationModal.isLoading}
-        />
+        <>
+          <ConfirmationModal
+            isOpen={confirmationModal.isOpen}
+            onClose={handleConfirmationClose}
+            onConfirm={handleConfirmationConfirm}
+            title={confirmationModal.title}
+            message={confirmationModal.message}
+            confirmText={confirmationModal.action === 'register' ? 'Register' : 'Cancel Registration'}
+            cancelText="Go Back"
+            type={confirmationModal.type}
+            icon={confirmationModal.action === 'register' ? 'fa-calendar-check' : 'fa-times-circle'}
+            isLoading={confirmationModal.isLoading}
+          />
+          <StatusModal
+            isOpen={statusModal.isOpen}
+            onClose={() => setStatusModal(prev => ({ ...prev, isOpen: false }))}
+            title={statusModal.title}
+            message={statusModal.message}
+            type={statusModal.type}
+          />
+        </>
       )}
     </>
   );

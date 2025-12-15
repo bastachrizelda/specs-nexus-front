@@ -1,36 +1,26 @@
-/* Modern Officer Dashboard Styles */
-
-/* Reset and base styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color: #23272f;
-  background: linear-gradient(135deg, #e6ede8 0%, #f8fafc 100%);
-  min-height: 100vh;
-  line-height: 1.6;
-}
+/* ===== Modern Officer Dashboard Styles - Student Side Aligned ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 /* Dashboard container */
 .dashboard-container {
-  padding: 32px 16px;
-  max-width: 1400px;
+  font-family: 'Poppins', sans-serif;
+  padding: 8px 0;
+  max-width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
+  min-height: 100%;
 }
 
 /* Card styles */
 .card {
-  background: rgba(255,255,255,0.95);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px 0 rgba(14,63,24,0.13), 0 1.5px 6px 0 rgba(84,84,84,0.08);
-  padding: 32px 28px;
-  margin-bottom: 36px;
-  border: 1.5px solid #b6e2c6;
-  transition: box-shadow 0.22s, transform 0.22s;
+  background-color: #ffffff;
+  border-radius: 30px;
+  box-shadow: 3px 2px 4px 2px rgba(84, 84, 84, 0.241);
+  padding: 1.275rem 0.75rem;
+  margin-bottom: 1.8rem;
+  border: 2px solid #828282;
+  border-left: 10px solid #253f21;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -40,14 +30,14 @@ body {
   justify-content: space-between;
   align-items: center;
   padding-bottom: 18px;
-  border-bottom: 2px solid #fcd0b8;
+  border-bottom: 2px solid #e2e8f0;
   cursor: pointer;
 }
 
 .section-header h2 {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #0E3F18;
+  font-size: 1.275rem;
+  font-weight: 600;
+  color: #1a2a44;
   letter-spacing: 0.5px;
 }
 
@@ -59,36 +49,52 @@ body {
 /* Tabs */
 .tabs {
   display: flex;
-  gap: 12px;
-  border-bottom: 2px solid #e2e8f0;
+  gap: 7.2px;
+  flex-wrap: wrap;
   margin-bottom: 28px;
 }
 
 .tab-button {
-  padding: 14px 22px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #6b7280;
-  background: none;
+  background-color: #f1f1f1;
   border: none;
-  border-radius: 12px 12px 0 0;
+  border-radius: 18px;
+  padding: 8px 18px !important;
+  font-size: 15px !important;
+  font-weight: 600;
+  color: #2d5641;
   cursor: pointer;
-  transition: color 0.2s, background 0.2s;
+  transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
-.tab-button:hover,
+.tab-button:hover {
+  background-color: #253f21 !important;
+  color: #ffffff !important;
+}
+
 .tab-button.active {
-  color: #fff;
-  background: linear-gradient(90deg, #0E3F18 60%, #e2cdb6 100%);
-  border-bottom: 2px solid #f7761f;
+  background-color: #0e3f18 !important;
+  color: white;
 }
 
 /* Stats grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 22px;
   margin-bottom: 28px;
+}
+
+@media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stat-box {

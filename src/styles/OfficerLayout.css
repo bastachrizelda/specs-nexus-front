@@ -1,11 +1,56 @@
+/* ===== Officer Layout - Student Side Aligned ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Layout Container */
+.layout-container {
+  display: flex;
+  height: 100vh;
+  background-color: #f9f9f9;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Main Content Area */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   transition: margin-left 0.3s ease;
   width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
+/* Content Wrapper - This is where pages render */
+.content-wrapper {
+  flex: 1;
+  padding: .75rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  height: calc(100vh - 60px);
+}
+
+/* Scrollbar Styling */
+.content-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-wrapper::-webkit-scrollbar-track {
+  background: rgba(45, 86, 65, 0.05);
+  border-radius: 4px;
+}
+
+.content-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(45, 86, 65, 0.2);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.content-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(45, 86, 65, 0.35);
+}
+
+/* Sidebar Overlay for Mobile */
 .sidebar-overlay-ss {
   position: fixed;
   top: 0;
@@ -14,6 +59,11 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 99;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Desktop defaults */

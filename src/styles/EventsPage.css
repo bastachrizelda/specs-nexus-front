@@ -51,6 +51,41 @@
   color: white;
 }
 
+/* View Mode Toggle */
+.view-mode-toggle {
+  display: flex;
+  gap: 4px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.view-mode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #6b7280;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-mode-btn:hover {
+  color: #374151;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.view-mode-btn.active {
+  background: white;
+  color: #2d5641;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .events-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(225px, 1fr)); /* Reduced from 250px */

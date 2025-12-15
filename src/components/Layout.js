@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import Chatbot from './Chatbot';
 import LogoutModal from './LogoutModal';
+import { clearProfileCache } from '../services/userService';
 import '../styles/Layout.css';
 
 const Layout = ({ user, children }) => {
@@ -54,7 +55,7 @@ const Layout = ({ user, children }) => {
   };
 
   const handleLogout = () => {
-    console.log('Logging out: clearing access_token and user_id from localStorage');
+    clearProfileCache(); // Clear cached profile data
     localStorage.removeItem('access_token');
     localStorage.removeItem('user_id');
     navigate('/');

@@ -30,12 +30,12 @@ const ReceiptModal = ({ show, receiptUrl, onClose }) => {
         >
           ×
         </button>
+
         {receiptUrl ? (
           <img
             src={receiptUrl}
             alt="Receipt"
             className="receipt-image"
-            onError={() => console.error(`Failed to load receipt image: ${receiptUrl}`)}
             onClick={handleContentClick}
           />
         ) : (

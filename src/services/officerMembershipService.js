@@ -89,6 +89,13 @@ export async function uploadOfficerQRCode(paymentType, file, token) {
   return response.data;
 }
 
+export async function confirmCashPayment(payload, token) {
+  const response = await apiClient.post(`/officer/cash-payment`, payload, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+}
+
 export async function getQRCode(paymentType, token) {
   const response = await apiClient.get(`/membership/qrcode?payment_type=${paymentType}`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -119,6 +126,16 @@ export async function createOfficerRequirement(data, token) {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+    }
+  );
+  return response.data;
+}
+
+export async function checkUserClearanceStatus(userId, requirement, token) {
+  const response = await apiClient.get(
+    `/membership/check-status?user_id=${userId}&requirement=${encodeURIComponent(requirement)}`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
     }
   );
   return response.data;

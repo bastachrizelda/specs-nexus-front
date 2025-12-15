@@ -51,7 +51,6 @@ const OfficerManageEventsPage = () => {
   // Handle authentication check on mount
   useEffect(() => {
     if (!token || !localStorage.getItem('officerInfo')) {
-      console.log('No officer token or info found, redirecting to login');
       localStorage.removeItem('officerAccessToken');
       localStorage.removeItem('officerInfo');
       navigate('/officer-login');
@@ -68,12 +67,9 @@ const OfficerManageEventsPage = () => {
         const officerData = storedOfficer ? JSON.parse(storedOfficer) : null;
         setOfficer(officerData);
 
-        console.log("Fetching events with showArchived:", showArchived);
         const eventsData = await getOfficerEvents(token, showArchived);
-        console.log("Fetched events:", eventsData);
         setEvents(eventsData);
       } catch (error) {
-        console.error("Failed to fetch data:", error.message);
         let errorMessage = 'Failed to load events. Please try again later.';
         
         // Check for specific error types
@@ -88,7 +84,6 @@ const OfficerManageEventsPage = () => {
         
         // Handle "Officer not found" errors (account archived/deactivated)
         if (isOfficerNotFound) {
-          console.log('Officer account not found or deactivated, clearing storage and redirecting to login');
           localStorage.removeItem('officerAccessToken');
           localStorage.removeItem('officerInfo');
           navigate('/officer-login');
@@ -97,7 +92,6 @@ const OfficerManageEventsPage = () => {
         
         // Handle token expiration or invalid token errors
         if (isTokenExpired || isInvalidToken || (is401Error && !isOfficerNotFound)) {
-          console.log('Authentication failed (token issue), clearing storage and redirecting to login');
           localStorage.removeItem('officerAccessToken');
           localStorage.removeItem('officerInfo');
           navigate('/officer-login');
@@ -124,14 +118,12 @@ const OfficerManageEventsPage = () => {
   }, [token, showArchived, navigate]);
 
   const handleAddNewEvent = () => {
-    console.log("Opening add new event modal");
     setSelectedEvent(null);
     setShowEventModal(true);
   };
 
   const handleEdit = (evt, e) => {
     e.stopPropagation();
-    console.log("Editing event:", evt.id);
     setSelectedEvent(evt);
     setShowEventModal(true);
   };
@@ -182,7 +174,6 @@ const OfficerManageEventsPage = () => {
       const updated = await getOfficerEvents(token, showArchived);
       setEvents(updated);
     } catch (error) {
-      console.error(`Failed to ${action} event:`, error.message);
       setApprovalModal({ isOpen: false, eventId: null });
       setStatusModal({
         isOpen: true,
@@ -195,7 +186,6 @@ const OfficerManageEventsPage = () => {
 
   const handleArchive = (eventId, e) => {
     e.stopPropagation();
-    console.log("Opening archive confirmation for event:", eventId);
     setConfirmationModal({
       isOpen: true,
       title: 'Archive Event',
@@ -211,7 +201,6 @@ const OfficerManageEventsPage = () => {
     const eventId = eventIdParam || confirmationModal.eventId;
     
     if (!eventId) {
-      console.error("No event ID provided for archive");
       setStatusModal({
         isOpen: true,
         title: 'Error',
@@ -225,7 +214,6 @@ const OfficerManageEventsPage = () => {
     setConfirmationModal(prev => ({ ...prev, isLoading: true }));
     
     try {
-      console.log("Archiving event:", eventId);
       await deleteOfficerEvent(eventId, token);
       const updated = await getOfficerEvents(token, showArchived);
       setEvents(updated);
@@ -239,7 +227,6 @@ const OfficerManageEventsPage = () => {
         type: 'success',
       });
     } catch (error) {
-      console.error("Failed to archive event:", error.message);
       const isOfficerNotFound = error.message.includes('Officer not found') || 
                                 error.message.includes('detail: Officer not found');
       const isTokenExpired = error.message.includes('Token expired') || 
@@ -250,7 +237,6 @@ const OfficerManageEventsPage = () => {
       const is401Error = error.message.includes('HTTP error! status: 401');
       
       if (isOfficerNotFound || isTokenExpired || isInvalidToken || (is401Error && !isOfficerNotFound)) {
-        console.log('Authentication failed, clearing storage and redirecting to login');
         localStorage.removeItem('officerAccessToken');
         localStorage.removeItem('officerInfo');
         navigate('/officer-login');
@@ -268,7 +254,6 @@ const OfficerManageEventsPage = () => {
 
   const handleDetails = (event, e) => {
     e.stopPropagation();
-    console.log("Opening details for event:", event.id);
     setSelectedEvent(event);
     setShowDetailsModal(true);
   };
@@ -276,7 +261,6 @@ const OfficerManageEventsPage = () => {
   const handleParticipants = async (event, e) => {
     e.stopPropagation();
     if (!event?.id) {
-      console.error("Invalid event ID");
       setStatusModal({
         isOpen: true,
         title: 'Error',
@@ -287,35 +271,31 @@ const OfficerManageEventsPage = () => {
     }
     setShowDetailsModal(false);
     setSelectedEvent(event);
+    await fetchParticipants(event.id);
+  };
+
+  const fetchParticipants = async (eventId) => {
     try {
-      console.log("Fetching participants for event:", event.id);
-      console.log("API URL:", `${API_URL}/events/${event.id}/participants`);
-      console.log("Token:", token.substring(0, 10) + '...');
-      const res = await fetch(`${API_URL}/events/${event.id}/participants`, {
+      const res = await fetch(`${API_URL}/events/${eventId}/participants`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Response status:", res.status);
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         if (res.status === 401) {
-          console.log('Authentication failed, redirecting to login');
           localStorage.removeItem('officerAccessToken');
           localStorage.removeItem('officerInfo');
           navigate('/officer-login');
           return;
         } else {
-          console.error('Failed to fetch participants:', errorData.detail || 'Unknown');
           throw new Error(`HTTP error! Status: ${res.status}, detail: ${errorData.detail || 'Unknown'}`);
         }
       }
       const participantsData = await res.json();
-      console.log("Participants data:", participantsData);
       setParticipants(participantsData || []);
       setShowParticipantsModal(true);
     } catch (error) {
-      console.error('Failed to fetch participants:', error.message);
       setParticipants([]);
       setStatusModal({
         isOpen: true,
@@ -327,19 +307,22 @@ const OfficerManageEventsPage = () => {
     }
   };
 
+  const handleRefreshParticipants = () => {
+    if (selectedEvent?.id) {
+      fetchParticipants(selectedEvent.id);
+    }
+  };
+
   const handleCloseEventModal = () => {
-    console.log("Closing event modal");
     setShowEventModal(false);
   };
 
   const handleCloseDetailsModal = () => {
-    console.log("Closing details modal");
     setShowDetailsModal(false);
     setSelectedEvent(null);
   };
 
   const handleCloseParticipantsModal = () => {
-    console.log("Closing participants modal");
     setShowParticipantsModal(false);
     setParticipants([]);
   };
@@ -357,7 +340,6 @@ const OfficerManageEventsPage = () => {
   const handleSave = async (formData, eventId) => {
     try {
       if (eventId) {
-        console.log("Updating event:", eventId);
         await updateOfficerEvent(eventId, formData, token);
         setStatusModal({
           isOpen: true,
@@ -366,7 +348,6 @@ const OfficerManageEventsPage = () => {
           type: 'success',
         });
       } else {
-        console.log("Creating new event");
         await createOfficerEvent(formData, token);
         setStatusModal({
           isOpen: true,
@@ -379,7 +360,6 @@ const OfficerManageEventsPage = () => {
       const updated = await getOfficerEvents(token, showArchived);
       setEvents(updated);
     } catch (error) {
-      console.error("Error saving event:", error.message);
       let errorMessage = 'Failed to save the event. Please try again.';
       const isOfficerNotFound = error.message.includes('Officer not found') || 
                                 error.message.includes('detail: Officer not found');
@@ -395,7 +375,6 @@ const OfficerManageEventsPage = () => {
       }
       
       if (isOfficerNotFound || isTokenExpired || isInvalidToken || (is401Error && !isOfficerNotFound)) {
-        console.log('Authentication failed, redirecting to login');
         localStorage.removeItem('officerAccessToken');
         localStorage.removeItem('officerInfo');
         navigate('/officer-login');
@@ -411,7 +390,6 @@ const OfficerManageEventsPage = () => {
   };
 
   const toggleArchived = () => {
-    console.log("Toggling archived:", !showArchived);
     setIsTransitioning(true);
     setShowArchived(!showArchived);
   };
@@ -644,6 +622,9 @@ const OfficerManageEventsPage = () => {
           participants={participants}
           onClose={handleCloseParticipantsModal}
           eventId={selectedEvent?.id}
+          eventTitle={selectedEvent?.title}
+          event={selectedEvent}
+          onRefresh={handleRefreshParticipants}
         />
         <StatusModal
           isOpen={statusModal.isOpen}

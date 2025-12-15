@@ -348,7 +348,7 @@ className={errors.location ? 'z-input-error' : ''}
             </button>
             <img
               src={imageModal.imageUrl}
-              alt="Full-size Announcement Image"
+              alt="Full-size announcement"
               className="z-image-modal-content"
             />
           </div>

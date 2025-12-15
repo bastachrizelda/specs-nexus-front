@@ -54,7 +54,6 @@ const AdminManageOfficerPage = () => {
       const nonOfficerUsers = usersData.filter(user => !officerUserIds.has(user.id));
       setUsers(nonOfficerUsers);
     } catch (error) {
-      console.error('Failed to fetch data:', error);
       setStatusModal({
         isOpen: true,
         title: 'Error Fetching Data',
@@ -98,7 +97,7 @@ const AdminManageOfficerPage = () => {
         type: 'success',
       });
     } catch (error) {
-      console.error('Failed to demote officer status:', error);
+
       setConfirmationModal((prev) => ({ ...prev, isOpen: false, isLoading: false }));
       setStatusModal({
         isOpen: true,
@@ -143,7 +142,7 @@ const AdminManageOfficerPage = () => {
         type: 'success',
       });
     } catch (error) {
-      console.error('Failed to demote selected officers’ status:', error);
+
       setConfirmationModal((prev) => ({ ...prev, isOpen: false, isLoading: false }));
       setStatusModal({
         isOpen: true,
@@ -268,7 +267,6 @@ const AdminManageOfficerPage = () => {
       await fetchData();
       setConfirmationModal((prev) => ({ ...prev, isOpen: false, isLoading: false }));
     } catch (error) {
-      console.error('Failed to promote students:', error);
       setConfirmationModal((prev) => ({ ...prev, isOpen: false, isLoading: false }));
       setStatusModal({
         isOpen: true,

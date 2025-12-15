@@ -3,11 +3,58 @@ import ConfirmationModal from './ConfirmationModal';
 import StatusModal from './StatusModal';
 import '../styles/OfficerEventModal.css';
 
+// Convert a date string or Date object to Manila timezone for datetime-local input.
+// If the date string has no timezone info, treat it as already in Manila time.
+const formatDateToManilaInput = (dateInput) => {
+  if (!dateInput) return '';
+
+  // If it's already a string in YYYY-MM-DDTHH:MM format without timezone, use it directly
+  if (typeof dateInput === 'string') {
+    // Check if it has timezone info (Z or +/- offset)
+    const hasTimezone = /[Z]|[+-]\d{2}:\d{2}$/.test(dateInput);
+
+    if (!hasTimezone) {
+      // No timezone info - treat as already in Manila time, just extract the datetime part
+      const match = dateInput.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/);
+      if (match) {
+        return match[1];
+      }
+    }
+  }
+
+  // Has timezone info or is a Date object - convert to Manila time
+  const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+  if (isNaN(date.getTime())) return '';
+
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Manila',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  const parts = formatter.formatToParts(date);
+  const year = parts.find((part) => part.type === 'year').value;
+  const month = parts.find((part) => part.type === 'month').value;
+  const day = parts.find((part) => part.type === 'day').value;
+  let hour = parts.find((part) => part.type === 'hour').value;
+  const minute = parts.find((part) => part.type === 'minute').value;
+  // Handle midnight case (hour 24 should be 00)
+  if (hour === '24') hour = '00';
+  return `${year}-${month}-${day}T${hour}:${minute}`;
+};
+
+// Get current date and time in Manila time zone.
+const getManilaDateTime = () => formatDateToManilaInput(new Date());
+
 const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dateTime, setDateTime] = useState('');
   const [location, setLocation] = useState('');
+  const [feedbackLink, setFeedbackLink] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
   const [registrationStart, setRegistrationStart] = useState('');
@@ -33,61 +80,13 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
   });
   const fileInputRef = useRef(null);
 
-  // Function to get current date and time in Manila time zone
-  const getManilaDateTime = () => {
-    const now = new Date();
-    return formatDateToManilaInput(now);
-  };
-
-  // Function to convert a date string or Date object to Manila timezone for datetime-local input
-  // If the date string has no timezone info, treat it as already in Manila time
-  const formatDateToManilaInput = (dateInput) => {
-    if (!dateInput) return '';
-    
-    // If it's already a string in YYYY-MM-DDTHH:MM format without timezone, use it directly
-    if (typeof dateInput === 'string') {
-      // Check if it has timezone info (Z or +/- offset)
-      const hasTimezone = /[Z]|[+-]\d{2}:\d{2}$/.test(dateInput);
-      
-      if (!hasTimezone) {
-        // No timezone info - treat as already in Manila time, just extract the datetime part
-        const match = dateInput.match(/^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2})/);
-        if (match) {
-          return match[1];
-        }
-      }
-    }
-    
-    // Has timezone info or is a Date object - convert to Manila time
-    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
-    if (isNaN(date.getTime())) return '';
-    
-    const formatter = new Intl.DateTimeFormat('en-CA', {
-      timeZone: 'Asia/Manila',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    });
-    const parts = formatter.formatToParts(date);
-    const year = parts.find((part) => part.type === 'year').value;
-    const month = parts.find((part) => part.type === 'month').value;
-    const day = parts.find((part) => part.type === 'day').value;
-    let hour = parts.find((part) => part.type === 'hour').value;
-    const minute = parts.find((part) => part.type === 'minute').value;
-    // Handle midnight case (hour 24 should be 00)
-    if (hour === '24') hour = '00';
-    return `${year}-${month}-${day}T${hour}:${minute}`;
-  };
-
   useEffect(() => {
     if (initialEvent) {
       setTitle(initialEvent.title || '');
       setDescription(initialEvent.description || '');
       setDateTime(formatDateToManilaInput(initialEvent.date));
       setLocation(initialEvent.location || '');
+      setFeedbackLink(initialEvent.feedback_link || '');
       setRegistrationStart(formatDateToManilaInput(initialEvent.registration_start));
       setRegistrationEnd(formatDateToManilaInput(initialEvent.registration_end) || formatDateToManilaInput(initialEvent.date));
       setImageFile(null);
@@ -99,13 +98,14 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
       setDescription('');
       setDateTime('');
       setLocation('');
+      setFeedbackLink('');
       setRegistrationStart(manilaDateTime);
       setRegistrationEnd('');
       setImageFile(null);
       setPreviewUrl('');
       setErrors({});
     }
-  }, [initialEvent, show, getManilaDateTime]);
+  }, [initialEvent, show]);
 
   const resetForm = () => {
     const manilaDateTime = getManilaDateTime();
@@ -113,6 +113,7 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
     setDescription('');
     setDateTime('');
     setLocation('');
+    setFeedbackLink('');
     setRegistrationStart(manilaDateTime);
     setRegistrationEnd('');
     setImageFile(null);
@@ -178,6 +179,7 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
       description: setDescription,
       dateTime: setDateTime,
       location: setLocation,
+      feedbackLink: setFeedbackLink,
       registrationStart: setRegistrationStart,
       registrationEnd: setRegistrationEnd,
     };
@@ -238,6 +240,7 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
       // Send datetime as-is (Manila time) - backend stores without timezone
       formData.append('date', dateTime + ':00');
       formData.append('location', location);
+      formData.append('feedback_link', feedbackLink.trim() || '');
       formData.append('registration_start', registrationStart + ':00');
       formData.append('registration_end', registrationEnd + ':00');
 
@@ -348,6 +351,18 @@ const OfficerEventModal = ({ show, onClose, onSave, initialEvent }) => {
                       {errors.location}
                     </span>
                   )}
+                </div>
+
+                <div className="z-event-meta-item">
+                  <label htmlFor="feedbackLink">Feedback/Evaluation Link (Optional)</label>
+                  <input
+                    id="feedbackLink"
+                    type="url"
+                    value={feedbackLink}
+                    onChange={(e) => handleInputChange('feedbackLink', e.target.value)}
+                    placeholder="https://forms.google.com/..."
+                  />
+                  <span className="z-helper-text">Members can evaluate after attendance is verified</span>
                 </div>
               </div>
               <div className="z-event-meta-item z-full-width">

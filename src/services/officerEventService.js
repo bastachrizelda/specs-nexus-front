@@ -12,9 +12,8 @@ export const getOfficerEvents = async (token, archived = false) => {
   }
 
   try {
-    console.log(`Fetching events with token: ${token.substring(0, 10)}...`);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
     
     const response = await fetch(`${API_URL}/events/officer/list?archived=${archived}`, {
       method: 'GET',
@@ -29,15 +28,11 @@ export const getOfficerEvents = async (token, archived = false) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Server response:', errorData);
       throw new Error(`HTTP error! status: ${response.status}, detail: ${errorData.detail || 'Unknown'}`);
     }
 
-    const data = await response.json();
-    console.log('Events fetched successfully:', data);
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Error fetching officer events:', error.message);
     if (error.name === 'AbortError') {
       throw new Error('Request timeout: The server took too long to respond. Please try again.');
     }
@@ -51,9 +46,8 @@ export const createOfficerEvent = async (formData, token) => {
   }
 
   try {
-    console.log('Creating event with token:', token.substring(0, 10) + '...');
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
     
     const response = await fetch(`${API_URL}/events/officer/create`, {
       method: 'POST',
@@ -68,15 +62,11 @@ export const createOfficerEvent = async (formData, token) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Server response:', errorData);
       throw new Error(`HTTP error! status: ${response.status}, detail: ${errorData.detail || 'Unknown'}`);
     }
 
-    const data = await response.json();
-    console.log('Event created successfully:', data);
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Error creating event:', error.message);
     throw error;
   }
 };
@@ -87,9 +77,8 @@ export const updateOfficerEvent = async (eventId, formData, token) => {
   }
 
   try {
-    console.log(`Updating event ${eventId} with token: ${token.substring(0, 10)}...`);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
     
     const response = await fetch(`${API_URL}/events/officer/update/${eventId}`, {
       method: 'PUT',
@@ -104,15 +93,11 @@ export const updateOfficerEvent = async (eventId, formData, token) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Server response:', errorData);
       throw new Error(`HTTP error! status: ${response.status}, detail: ${errorData.detail || 'Unknown'}`);
     }
 
-    const data = await response.json();
-    console.log('Event updated successfully:', data);
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Error updating event:', error.message);
     throw error;
   }
 };
@@ -123,9 +108,8 @@ export const deleteOfficerEvent = async (eventId, token) => {
   }
 
   try {
-    console.log(`Deleting event ${eventId} with token: ${token.substring(0, 10)}...`);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
     
     const response = await fetch(`${API_URL}/events/officer/delete/${eventId}`, {
       method: 'DELETE',
@@ -139,15 +123,11 @@ export const deleteOfficerEvent = async (eventId, token) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Server response:', errorData);
       throw new Error(`HTTP error! status: ${response.status}, detail: ${errorData.detail || 'Unknown'}`);
     }
 
-    const data = await response.json();
-    console.log('Event deleted successfully:', data);
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Error deleting event:', error.message);
     throw error;
   }
 };
@@ -158,9 +138,8 @@ export const declineOfficerEvent = async (eventId, reason, token) => {
   }
 
   try {
-    console.log(`Declining event ${eventId} with reason: ${reason}`);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
     
     const formData = new FormData();
     formData.append('reason', reason);
@@ -178,15 +157,11 @@ export const declineOfficerEvent = async (eventId, reason, token) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Server response:', errorData);
       throw new Error(`HTTP error! status: ${response.status}, detail: ${errorData.detail || 'Unknown'}`);
     }
 
-    const data = await response.json();
-    console.log('Event declined successfully:', data);
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Error declining event:', error.message);
     throw error;
   }
 };
@@ -197,9 +172,8 @@ export const approveOfficerEvent = async (eventId, token) => {
   }
 
   try {
-    console.log(`Approving event ${eventId}`);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
     
     const response = await fetch(`${API_URL}/events/${eventId}/approve`, {
       method: 'POST',
@@ -213,15 +187,11 @@ export const approveOfficerEvent = async (eventId, token) => {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Server response:', errorData);
       throw new Error(`HTTP error! status: ${response.status}, detail: ${errorData.detail || 'Unknown'}`);
     }
 
-    const data = await response.json();
-    console.log('Event approved successfully:', data);
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error('Error approving event:', error.message);
     throw error;
   }
 };

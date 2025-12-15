@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getQRCode } from '../services/officerMembershipService';
 import '../styles/OfficerQRManagementModal.css';
 
@@ -12,7 +12,7 @@ const OfficerQRManagementModal = ({ show, onClose, onQRUpload }) => {
   const modalRef = useRef(null);
   const firstInputRef = useRef(null);
 
-  const fetchQRCodeData = async () => {
+  const fetchQRCodeData = useCallback(async () => {
     setIsLoading(true);
     setQrError(null);
     try {
@@ -30,12 +30,12 @@ const OfficerQRManagementModal = ({ show, onClose, onQRUpload }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedType, token]);
 
   useEffect(() => {
     if (!token || !show) return;
     fetchQRCodeData();
-  }, [selectedType, token, show]);
+  }, [show, token, fetchQRCodeData]);
 
   useEffect(() => {
     if (show && firstInputRef.current) {

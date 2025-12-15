@@ -6,69 +6,102 @@ import {
   FaCalendarAlt, 
   FaBullhorn, 
   FaUsers, 
-  FaTools,
-  FaSignOutAlt 
+  FaMoneyBillWave,
+  FaUsersCog,
+  FaSignOutAlt
 } from 'react-icons/fa';
+
 import '../styles/OfficerSidebar.css';
 
-const OfficerSidebar = ({ officer, isSidebarOpen, setIsSidebarOpen, isMobile, onOpenLogoutModal }) => {
+const OfficerSidebar = ({ officer, isSidebarOpen, isMobile, onOpenLogoutModal }) => {
   const location = useLocation();
 
+  const navItems = [
+    { path: '/officer-dashboard', icon: FaTachometerAlt, label: 'Dashboard' },
+    { path: '/officer-manage-events', icon: FaCalendarAlt, label: 'Manage Events' },
+    { path: '/officer-manage-announcements', icon: FaBullhorn, label: 'Manage Announcements' },
+    { path: '/officer-manage-membership', icon: FaUsers, label: 'Manage Membership' },
+    { path: '/officer-cash-verification', icon: FaMoneyBillWave, label: 'Cash Payment' },
+  ];
+
+  const isAdmin = officer?.position?.toLowerCase() === 'admin';
+
   return (
-    <div className={isSidebarOpen ? 'sidebar' : 'sidebar collapsed'}>
-      <div className="profile-container">
-        <div className="profile-icon">
+    <div className={`sidebar ${isSidebarOpen ? '' : 'collapsed'}`}>
+      {/* Profile Section */}
+      <div className="profile-section">
+        <div className="profile-avatar">
           <FaUserCircle />
+          <span className="status-indicator"></span>
         </div>
         {isSidebarOpen && (
-          <div className="user-info">
-            <h3>{officer?.full_name || 'Officer'}</h3>
-            <p>{officer?.position || 'Admin'}</p>
+          <div className="profile-info">
+            <h3 className="profile-name">{officer?.full_name || 'Officer'}</h3>
+            <span className="profile-role">{officer?.position || 'Officer'}</span>
           </div>
         )}
       </div>
-      
-      <nav>
-        <ul>
-          <li>
-            <Link to="/officer-dashboard" className={location.pathname === '/officer-dashboard' ? 'active' : ''}>
-              <span className="nav-icon"><FaTachometerAlt /></span>
-              {isSidebarOpen && <span className="nav-text">Dashboard</span>}
-            </Link>
-          </li>
-          <li>
-            <Link to="/officer-manage-events" className={location.pathname === '/officer-manage-events' ? 'active' : ''}>
-              <span className="nav-icon"><FaCalendarAlt /></span>
-              {isSidebarOpen && <span className="nav-text">Manage Events</span>}
-            </Link>
-          </li>
-          <li>
-            <Link to="/officer-manage-announcements" className={location.pathname === '/officer-manage-announcements' ? 'active' : ''}>
-              <span className="nav-icon"><FaBullhorn /></span>
-              {isSidebarOpen && <span className="nav-text">Manage Announcements</span>}
-            </Link>
-          </li>
-          <li>
-            <Link to="/officer-manage-membership" className={location.pathname === '/officer-manage-membership' ? 'active' : ''}>
-              <span className="nav-icon"><FaUsers /></span>
-              {isSidebarOpen && <span className="nav-text">Manage Membership</span>}
-            </Link>
-          </li>
-          {officer?.position?.toLowerCase() === 'admin' && (
-            <li>
-              <Link to="/admin-manage-officers" className={location.pathname === '/admin-manage-officers' ? 'active' : ''}>
-                <span className="nav-icon"><FaTools /></span>
-                {isSidebarOpen && <span className="nav-text">Manage Officers</span>}
-              </Link>
-            </li>
-          )}
-        </ul>
+
+      {/* Navigation */}
+      <nav className="sidebar-nav">
+        <div className="nav-section">
+          {isSidebarOpen && <span className="nav-section-title">Main Menu</span>}
+          <ul className="nav-list">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.path;
+              return (
+                <li key={item.path} className="nav-item">
+                  <Link 
+                    to={item.path} 
+                    className={`nav-link ${isActive ? 'active' : ''}`}
+                    data-tooltip={!isSidebarOpen ? item.label : undefined}
+                  >
+                    <span className="nav-icon">
+                      <Icon />
+                    </span>
+                    {isSidebarOpen && <span className="nav-text">{item.label}</span>}
+                    {isActive && <span className="active-indicator"></span>}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {isAdmin && (
+          <div className="nav-section">
+            {isSidebarOpen && <span className="nav-section-title">Administration</span>}
+            <ul className="nav-list">
+              <li className="nav-item">
+                <Link 
+                  to="/admin-manage-officers" 
+                  className={`nav-link ${location.pathname === '/admin-manage-officers' ? 'active' : ''}`}
+                  data-tooltip={!isSidebarOpen ? 'Manage Officers' : undefined}
+                >
+                  <span className="nav-icon">
+                    <FaUsersCog />
+                  </span>
+                  {isSidebarOpen && <span className="nav-text">Manage Officers</span>}
+                  {location.pathname === '/admin-manage-officers' && <span className="active-indicator"></span>}
+                </Link>
+              </li>
+            </ul>
+          </div>
+        )}
       </nav>
-      
-      <button className="logout-btn" onClick={onOpenLogoutModal}>
-        <span className="nav-icon"><FaSignOutAlt /></span>
-        {isSidebarOpen && <span className="nav-text">Logout</span>}
-      </button>
+
+      {/* Logout Button */}
+      <div className="sidebar-footer">
+        <button 
+          className="logout-btn" 
+          onClick={onOpenLogoutModal}
+          data-tooltip={!isSidebarOpen ? 'Logout' : undefined}
+        >
+          <span className="nav-icon"><FaSignOutAlt /></span>
+          {isSidebarOpen && <span className="nav-text">Logout</span>}
+        </button>
+      </div>
     </div>
   );
 };

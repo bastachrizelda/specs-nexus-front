@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import OfficerLoginForm from '../components/OfficerLoginForm';
+import '@fortawesome/fontawesome-free/css/fontawesome.min.css';
+import '@fortawesome/fontawesome-free/css/solid.min.css';
 import '../styles/OfficerLoginPage.css';
 
 const OfficerLoginPage = () => {

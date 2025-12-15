@@ -67,7 +67,7 @@ const OfficerLayout = ({ children }) => {
 
   const contentStyle = isMobile 
     ? { marginLeft: 0 }
-    : { marginLeft: isSidebarOpen ? '220px' : '60px' };
+    : { marginLeft: isSidebarOpen ? '260px' : '72px' };
 
   return (
     <div className={`layout-container ${isSidebarOpen ? 'sidebar-open' : ''}`}>

@@ -17,7 +17,6 @@ export async function getEvents(token) {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching events:', error.response ? error.response.data : error.message);
     throw error;
   }
 }
@@ -31,7 +30,6 @@ export async function getEvent(eventId, token) {
     });
     return response.data;
   } catch (error) {
-    console.error(`Error fetching event ${eventId}:`, error.response ? error.response.data : error.message);
     throw error;
   }
 }
@@ -45,7 +43,6 @@ export async function joinEvent(eventId, token) {
     });
     return response.data;
   } catch (error) {
-    console.error(`Error joining event ${eventId}:`, error.response ? error.response.data : error.message);
     throw error;
   }
 }
@@ -59,7 +56,6 @@ export async function leaveEvent(eventId, token) {
     });
     return response.data;
   } catch (error) {
-    console.error(`Error leaving event ${eventId}:`, error.response ? error.response.data : error.message);
     throw error;
   }
 }

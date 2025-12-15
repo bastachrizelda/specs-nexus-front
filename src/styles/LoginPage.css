@@ -98,7 +98,7 @@ html, body {
 
 .login-button::before {
   content: "\f007";
-  font-family: "Font Awesome 6 Free";
+  font-family: "Font Awesome 7 Free";
   font-weight: 900;
   display: inline-block;
   font-size: 18px;

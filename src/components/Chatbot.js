@@ -1,7 +1,9 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { getProfile } from '../services/userService';
+import '@fortawesome/fontawesome-free/css/fontawesome.min.css';
+import '@fortawesome/fontawesome-free/css/solid.min.css';
 import '../styles/Chatbot.css';
 
 // API URL configuration
@@ -151,7 +153,6 @@ const allowedRoutes = ['/dashboard', '/profile', '/events', '/announcements', '/
 const Chatbot = ({ userId, token, user }) => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isMaximized, setIsMaximized] = useState(false);
   const [messages, setMessages] = useState([
     { sender: 'bot', text: 'Hello! I am SPECS Nexus Bot. How may I help you today?' }
@@ -167,10 +168,8 @@ const Chatbot = ({ userId, token, user }) => {
     const fetchUserProfile = async () => {
       if (!user?.full_name && token) {
         try {
-          console.log('Chatbot: Fetching user profile due to missing full_name', { userId });
           const profile = await getProfile(token);
           setUserData(profile);
-          console.log('Chatbot: Fetched user profile:', profile);
         } catch (error) {
           console.error('Chatbot: Failed to fetch user profile:', {
             status: error.response?.status,
@@ -184,23 +183,9 @@ const Chatbot = ({ userId, token, user }) => {
     };
 
     fetchUserProfile();
-    console.log('Chatbot: User prop received:', { userId, user, userData });
-  }, [user, userId, token]);
+  }, [user, token]);
 
-  const checkRoute = useCallback(() => {
-    const isAllowed = allowedRoutes.includes(location.pathname);
-    console.log('Chatbot check:', {
-      userId,
-      token,
-      route: location.pathname,
-      isAllowed
-    });
-    return isAllowed;
-  }, [location.pathname, userId, token]);
-
-  useEffect(() => {
-    checkRoute();
-  }, [checkRoute]);
+  const isRouteAllowed = allowedRoutes.includes(location.pathname);
 
   useEffect(() => {
     let lastWidth = window.innerWidth;
@@ -210,7 +195,6 @@ const Chatbot = ({ userId, token, user }) => {
 
       // Only update state if width changes significantly, not height (keyboard)
       if (Math.abs(currentWidth - lastWidth) > 10) {
-        setIsMobile(isMobileView);
         if (isMobileView) {
           setIsMaximized(false); // Reset maximized state on mobile
         }
@@ -308,12 +292,9 @@ const Chatbot = ({ userId, token, user }) => {
     }
   };
 
-  if (!checkRoute()) {
-    console.log('Chatbot hidden: Route not allowed');
+  if (!isRouteAllowed) {
     return null;
   }
-
-  console.log('Chatbot rendering for route:', location.pathname);
 
   return (
     <>

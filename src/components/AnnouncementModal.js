@@ -2,12 +2,6 @@ import React, { useState } from 'react';
 import '../styles/AnnouncementModal.css';
 
 const backendBaseUrl = 'https://specs-nexus-production.up.railway.app';
-
-const API_URL =
-  process.env.REACT_APP_API_URL ||
-  (typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost'
-    ? 'http://localhost:8000'
-    : backendBaseUrl);
 const AnnouncementModal = ({ announcement, onClose }) => {
   const [showFullImage, setShowFullImage] = useState(false);
   

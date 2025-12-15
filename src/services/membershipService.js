@@ -66,6 +66,15 @@ export async function updateMembershipReceipt(data, token) {
   return response.data;
 }
 
+export async function selectCashPayment(membershipId, token) {
+  const response = await apiClient.put(
+    `/membership/select_cash`,
+    { membership_id: membershipId },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return response.data;
+}
+
 // Add this function to your membershipService.js
 
 export async function getMembershipReceipt(membershipId, token) {

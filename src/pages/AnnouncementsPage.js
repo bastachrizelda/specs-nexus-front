@@ -21,7 +21,6 @@ const AnnouncementsPage = () => {
   // Early token check
   useEffect(() => {
     if (!token) {
-      console.log('No access token found, redirecting to login');
       localStorage.removeItem('access_token');
       localStorage.removeItem('user_id');
       navigate('/');
@@ -34,13 +33,9 @@ const AnnouncementsPage = () => {
 
     async function fetchUserProfile() {
       try {
-        console.log('Fetching user profile...');
         const userData = await getProfile(token);
-        console.log('User profile fetched successfully:', userData);
         setUser(userData);
       } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-        console.log('Clearing storage and redirecting to login due to profile fetch error');
         localStorage.removeItem('access_token');
         localStorage.removeItem('user_id');
         navigate('/');
@@ -60,7 +55,7 @@ const AnnouncementsPage = () => {
         const announcementsData = await getAnnouncements(token);
         setAnnouncements(announcementsData);
       } catch (error) {
-        console.error('Failed to fetch announcements:', error);
+        // Announcements fetch failed silently
       } finally {
         setIsAnnouncementsLoading(false);
       }
@@ -95,7 +90,6 @@ const AnnouncementsPage = () => {
   }
 
   if (!user) {
-    console.log('No user data, redirecting to login');
     return null;
   }
 

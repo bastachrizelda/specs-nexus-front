@@ -2,12 +2,6 @@ import React from 'react';
 import '../styles/AnnouncementCard.css';
 
 const backendBaseUrl = 'https://specs-nexus-production.up.railway.app';
-
-const API_URL =
-  process.env.REACT_APP_API_URL ||
-  (typeof window !== 'undefined' && window.location && window.location.hostname === 'localhost'
-    ? 'http://localhost:8000'
-    : backendBaseUrl);
 const AnnouncementCard = ({ announcement, onClick }) => {
   const imageUrl =
     announcement.image_url && announcement.image_url.startsWith("http")
@@ -35,8 +29,6 @@ const AnnouncementCard = ({ announcement, onClick }) => {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   };
-
-  const description = announcement.content || announcement.description || "";
 
   return (
     <div className="announcement-card" onClick={() => onClick(announcement)}>

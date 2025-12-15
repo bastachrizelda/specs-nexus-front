@@ -1,5 +1,3 @@
-import axios from 'axios';
-
 const backendBaseUrl = 'https://specs-nexus.onrender.com';
 
 const API_URL =
@@ -27,7 +25,6 @@ export const getOfficerAnnouncements = async (token, showArchived = false) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Error fetching announcements:", error);
     if (error.name === 'AbortError') {
       throw new Error('Request timeout: The server took too long to respond. Please try again.');
     }
@@ -56,7 +53,6 @@ export const createOfficerAnnouncement = async (formData, token) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Error creating announcement:", error);
     throw error;
   }
 };
@@ -82,7 +78,6 @@ export const updateOfficerAnnouncement = async (announcementId, formData, token)
     }
     return await response.json();
   } catch (error) {
-    console.error("Error updating announcement:", error);
     throw error;
   }
 };
@@ -107,7 +102,6 @@ export const deleteOfficerAnnouncement = async (announcementId, token) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Error archiving announcement:", error);
     throw error;
   }
 };

@@ -1,7 +1,12 @@
+/* ===== Officer Manage Events Page - Student Side Aligned ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
 .events-page {
-  max-width: 1280px;
+  font-family: 'Poppins', sans-serif;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 18px;
+  padding: 8px 0;
+  min-height: 100%;
 }
 
 .events-header {
@@ -16,7 +21,7 @@
 .events-header h1 {
   font-size: 25.2px;
   font-weight: 700;
-  color: #333;
+  color: #1a2a44;
   margin: 0;
 }
 
@@ -37,37 +42,40 @@
   background-color: #f1f1f1;
   border: none;
   border-radius: 18px;
-  padding: 7.2px 14.4px;
-  font-size: 12.6px;
+  padding: 8px 18px !important;
+  font-size: 15px !important;
   font-weight: 600;
-  color: #555;
+  color: #2d5641;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .toggle-btn:hover {
-  background-color: #e0e0e0;
+  background-color: #253f21 !important;
+  color: #ffffff !important;
 }
 
 .toggle-btn.active {
-  background-color: #2d5641;
+  background-color: #0e3f18 !important;
   color: white;
 }
 
 .add-event-btn {
-  background-color: #28a745;
+  background-color: #2d5641;
   color: white;
   border: none;
-  border-radius: 8px;
-  padding: 9px 18px;
-  font-size: 12.6px;
+  border-radius: 18px;
+  padding: 8px 18px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2.7px 5.4px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 2px 4px 2px rgba(84, 84, 84, 0.241);
   display: flex;
   align-items: center;
   gap: 7.2px;
+  font-family: 'Poppins', sans-serif;
 }
 
 .add-event-btn:hover {

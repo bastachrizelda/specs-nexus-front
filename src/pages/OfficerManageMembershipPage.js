@@ -11,6 +11,7 @@ import {
   uploadOfficerQRCode,
   createOfficerRequirement,
 } from '../services/officerMembershipService';
+import { exportFinancialRecordsToXlsx } from '../services/exportService';
 import OfficerMembershipModal from '../components/OfficerMembershipModal';
 import OfficerDenialReasonModal from '../components/OfficerDenialReasonModal';
 import OfficerRequirementModal from '../components/OfficerRequirementModal';
@@ -66,11 +67,9 @@ const OfficerManageMembershipPage = () => {
         getOfficerMemberships(token),
         getOfficerRequirements(token),
       ]);
-      console.log('Membership Data:', membershipData);
       setMemberships(membershipData);
       setRequirements(requirementData);
     } catch (error) {
-      console.error('Failed to fetch data:', error);
       if (error.response?.status === 401) {
         localStorage.removeItem('officerAccessToken');
         localStorage.removeItem('officerInfo');
@@ -315,8 +314,8 @@ const OfficerManageMembershipPage = () => {
     }
   };
 
-  const openReceiptModal = (url) => {
-    setSelectedReceiptUrl(url);
+  const openReceiptModal = (membership) => {
+    setSelectedReceiptUrl(membership.receipt_path);
     setShowReceiptModal(true);
   };
 
@@ -344,8 +343,17 @@ const OfficerManageMembershipPage = () => {
   });
 
   const uniqueBlocks = [...new Set(memberships.map((m) => m.user?.block).filter(Boolean))].sort();
-  const uniqueYears = [...new Set(memberships.map((m) => m.user?.year).filter(Boolean))].sort();
-  const uniqueRequirements = [...new Set(memberships.map((m) => m.requirement).filter(Boolean))].sort();
+  
+  const uniqueYears = [...new Set(memberships.map((m) => m.user?.year).filter(Boolean))].sort((a, b) => {
+    const yearOrder = { '1st year': 1, '2nd year': 2, '3rd year': 3, '4th year': 4 };
+    return (yearOrder[a] || 999) - (yearOrder[b] || 999);
+  });
+  
+  const uniqueRequirements = [...new Set(memberships.map((m) => m.requirement).filter(Boolean))].sort((a, b) => {
+    if (a.includes('1st')) return -1;
+    if (b.includes('1st')) return 1;
+    return 0;
+  });
 
   if (isLoading) {
     return <Loading message="Loading Officer Info..." />;
@@ -430,6 +438,22 @@ const OfficerManageMembershipPage = () => {
           <button className={activeTab === 'verifying' ? 'active' : ''} onClick={() => handleTabChange('verifying')}>
             VERIFYING
           </button>
+          <button
+            className="export-btn"
+            onClick={() => navigate('/officer-cash-verification')}
+            title="Cash Payment Verification"
+            style={{ marginLeft: '0.5rem' }}
+          >
+            <i className="fas fa-money-bill"></i> Cash Payment
+          </button>
+          <button
+            className="export-btn"
+            onClick={() => exportFinancialRecordsToXlsx(filteredMemberships)}
+            disabled={filteredMemberships.length === 0}
+            title={filteredMemberships.length === 0 ? 'No records to export' : 'Export to Excel'}
+          >
+            <i className="fas fa-file-export"></i> Export
+          </button>
         </section>
 
         <section className="additional-filters">
@@ -490,6 +514,7 @@ const OfficerManageMembershipPage = () => {
                 <th>Requirement</th>
                 <th>Price</th>
                 <th>Payment Type</th>
+                {activeTab === 'verifying' && <th>Ref No.</th>}
                 <th>Payment Date</th>
                 <th>Approval Date</th>
                 <th>Approved By</th>
@@ -504,10 +529,11 @@ const OfficerManageMembershipPage = () => {
                   <tr key={m.id}>
                     <td>{m.user?.full_name || '-'}</td>
                     <td>{m.user?.block || '-'}</td>
-                    <td>{m.user?.year || '-'}</td>
+                    <td>{m.user?.year ? m.user.year.replace(' year', '').replace(' Year', '') : '-'}</td>
                     <td>{m.requirement || '-'}</td>
                     <td>{formatPrice(m.amount)}</td>
                     <td>{formatPaymentMethod(m.payment_method)}</td>
+                    {activeTab === 'verifying' && <td>{m.reference_number || '-'}</td>}
                     <td>
                       {m.payment_date
                         ? new Date(m.payment_date).toLocaleString('en-US', {
@@ -540,7 +566,7 @@ const OfficerManageMembershipPage = () => {
                             src={m.receipt_path}
                             alt="Receipt"
                             width="50"
-                            onClick={() => openReceiptModal(m.receipt_path)}
+                            onClick={() => openReceiptModal(m)}
                             onError={() => console.error(`Failed to load receipt image: ${m.receipt_path}`)}
                           />
                         ) : (
@@ -579,7 +605,7 @@ const OfficerManageMembershipPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={activeTab === 'verifying' ? 12 : 9} style={{ textAlign: 'center', padding: '2rem' }}>
+                  <td colSpan={activeTab === 'verifying' ? 13 : 10} style={{ textAlign: 'center', padding: '2rem' }}>
                     No memberships found.
                   </td>
                 </tr>
@@ -619,7 +645,9 @@ const OfficerManageMembershipPage = () => {
         <ReceiptModal
           show={showReceiptModal}
           receiptUrl={selectedReceiptUrl}
-          onClose={() => setShowReceiptModal(false)}
+          onClose={() => {
+            setShowReceiptModal(false);
+          }}
         />
         <StatusModal
           isOpen={statusModal.isOpen}
