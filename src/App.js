@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Loading from './components/Loading';
+import './styles/UXEnhancements.css';
 
 // Eager load login pages (entry points)
 import LoginPage from './pages/LoginPage';

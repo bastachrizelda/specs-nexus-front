@@ -7,6 +7,7 @@ import EventModal from '../components/EventModal';
 import StatusModal from '../components/StatusModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import OfficerEventApprovalModal from '../components/OfficerEventApprovalModal';
+import CertificateManagementModal from '../components/CertificateManagementModal';
 import OfficerLayout from '../components/OfficerLayout';
 import Loading from '../components/Loading';
 import '../styles/OfficerManageEventsPage.css';
@@ -45,6 +46,11 @@ const OfficerManageEventsPage = () => {
     isOpen: false,
     eventId: null,
   });
+  const [certificateModal, setCertificateModal] = useState({
+    isOpen: false,
+    event: null,
+  });
+  const [dropdownOpen, setDropdownOpen] = useState(null);
   const token = localStorage.getItem('officerAccessToken');
   const navigate = useNavigate();
 
@@ -258,6 +264,23 @@ const OfficerManageEventsPage = () => {
     setShowDetailsModal(true);
   };
 
+  const handleCertificates = (event, e) => {
+    e.stopPropagation();
+    setCertificateModal({
+      isOpen: true,
+      event: event,
+    });
+  };
+
+  const handleCertificateStatusUpdate = (status) => {
+    setStatusModal({
+      isOpen: true,
+      title: status.title,
+      message: status.message,
+      type: status.type,
+    });
+  };
+
   const handleParticipants = async (event, e) => {
     e.stopPropagation();
     if (!event?.id) {
@@ -422,6 +445,25 @@ const OfficerManageEventsPage = () => {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   };
 
+  const toggleDropdown = (eventId, e) => {
+    e.stopPropagation();
+    setDropdownOpen(dropdownOpen === eventId ? null : eventId);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownOpen && !e.target.closest('.card-menu-wrapper')) {
+        setDropdownOpen(null);
+      }
+    };
+
+    if (dropdownOpen) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [dropdownOpen]);
+
   // Show loading while fetching data or if officer info is not yet loaded
   if (isLoading || !token) {
     return <Loading message="Loading Events..." />;
@@ -550,10 +592,6 @@ const OfficerManageEventsPage = () => {
                             </>
                           ) : (
                             <>
-                              <button className="edit-btn" onClick={(e) => handleEdit(event, e)}>
-                                <span>EDIT</span>
-                                <i className="fas fa-edit"></i>
-                              </button>
                               {officer?.position?.toLowerCase() === 'admin' && (
                                 event.approval_status === 'approved' ? (
                                   <button 
@@ -578,15 +616,54 @@ const OfficerManageEventsPage = () => {
                                     className="approve-btn pending-status" 
                                     onClick={(e) => handleApproveEvent(event.id, e)}
                                   >
-                                    <span>APPROVE EVENT PLAN</span>
-                                    <i className="fas fa-hourglass-half"></i>
+                                    <span>APPROVE</span>
+                                    <i className="fas fa-check"></i>
                                   </button>
                                 )
                               )}
-                              <button className="archive-btn" onClick={(e) => handleArchive(event.id, e)}>
-                                <span>ARCHIVE</span>
-                                <i className="fas fa-archive"></i>
-                              </button>
+                              <div className="card-menu-wrapper">
+                                <button 
+                                  className="menu-trigger-btn" 
+                                  onClick={(e) => toggleDropdown(event.id, e)}
+                                  title="More actions"
+                                >
+                                  <i className="fas fa-ellipsis-v"></i>
+                                </button>
+                                {dropdownOpen === event.id && (
+                                  <div className="card-dropdown-menu">
+                                    <button 
+                                      className="dropdown-item edit-item" 
+                                      onClick={(e) => {
+                                        handleEdit(event, e);
+                                        setDropdownOpen(null);
+                                      }}
+                                    >
+                                      <i className="fas fa-edit"></i>
+                                      <span>Edit</span>
+                                    </button>
+                                    <button 
+                                      className="dropdown-item archive-item" 
+                                      onClick={(e) => {
+                                        handleArchive(event.id, e);
+                                        setDropdownOpen(null);
+                                      }}
+                                    >
+                                      <i className="fas fa-archive"></i>
+                                      <span>Archive</span>
+                                    </button>
+                                    <button 
+                                      className="dropdown-item certificate-item" 
+                                      onClick={(e) => {
+                                        handleCertificates(event, e);
+                                        setDropdownOpen(null);
+                                      }}
+                                    >
+                                      <i className="fas fa-certificate"></i>
+                                      <span>Certificates</span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
                             </>
                           )}
                         </div>
@@ -649,6 +726,13 @@ const OfficerManageEventsPage = () => {
           type="danger"
           icon="fa-archive"
           isLoading={confirmationModal.isLoading}
+        />
+        <CertificateManagementModal
+          show={certificateModal.isOpen}
+          onClose={() => setCertificateModal({ isOpen: false, event: null })}
+          event={certificateModal.event}
+          token={token}
+          onStatusUpdate={handleCertificateStatusUpdate}
         />
       </div>
     </OfficerLayout>

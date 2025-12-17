@@ -150,6 +150,12 @@
   }
 }
 
+.ep-scan-qr-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .ep-scan-qr-btn {
   display: flex;
   align-items: center;
@@ -513,55 +519,6 @@
   margin-left: 8px;
 }
 
-@media (max-width: 480px) {
-  .ep-modal-container {
-    margin: 16px;
-    padding: 20px; /* Adjusted for mobile */
-  }
-  
-  .ep-modal-container h2 {
-    font-size: 24px; /* Adjusted for mobile */
-  }
-  
-  .ep-participant-name {
-    font-size: 16px;
-  }
-  
-  .ep-participant-item {
-    padding: 12px;
-  }
-  
-  .ep-modal-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-  
-  .ep-upload-cert-btn {
-    font-size: 13px;
-    padding: 6px 12px;
-  }
-  
-  .ep-certificate-column {
-    font-size: 13px;
-  }
-
-  .ep-checkin-btn,
-  .ep-remove-checkin-btn {
-    font-size: 12px;
-    padding: 5px 10px;
-  }
-
-  .ep-section-header h3 {
-    font-size: 14px;
-  }
-
-  .ep-participant-actions {
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-}
-
 /* Dropdown Menu Styles */
 .ep-actions-dropdown {
   position: relative;
@@ -752,13 +709,321 @@
 }
 
 @media (max-width: 768px) {
-  .ep-evaluation-toggle-container {
-    flex-direction: column;
-    gap: 6px;
-    padding: 10px;
+  /* Modal container - full screen on mobile */
+  .ep-modal-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    padding: 16px !important;
+    border-radius: 0 !important;
+    padding-bottom: max(16px, env(safe-area-inset-bottom)) !important;
   }
-  
+
+  /* Header - more compact */
+  .ep-modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .ep-modal-container h2 {
+    font-size: 22px !important;
+    margin-bottom: 0 !important;
+  }
+
+  /* Close button - larger touch target */
+  .ep-modal-close {
+    width: 44px !important;
+    height: 44px !important;
+    font-size: 32px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+  }
+
+  /* Header actions - stack vertically */
+  .ep-header-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Export buttons - full width, larger */
+  .ep-export-btn {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    justify-content: center;
+    min-height: 48px;
+  }
+
+  .ep-scan-qr-wrapper {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+
+  .ep-scan-qr-btn {
+    flex: 1 !important;
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    justify-content: center;
+    min-height: 48px;
+  }
+
+  .ep-scan-qr-wrapper .ep-actions-dropdown {
+    flex-shrink: 0;
+  }
+
+  .ep-scan-qr-wrapper .ep-actions-toggle {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .ep-scan-qr-btn {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    justify-content: center;
+    min-height: 48px;
+  }
+
+  /* Search input - larger */
+  .ep-search-input {
+    font-size: 16px !important;
+    padding: 14px 16px !important;
+    border-radius: 8px !important;
+    min-height: 48px;
+  }
+
+  /* Stats - stack vertically */
+  .ep-participant-stats {
+    flex-direction: column;
+    gap: 8px;
+    font-size: 15px !important;
+  }
+
+  /* Eligible count box */
+  .ep-eligible-count {
+    padding: 14px !important;
+  }
+
+  .ep-eligible-count strong {
+    font-size: 18px !important;
+  }
+
+  .ep-eligible-hint {
+    font-size: 14px !important;
+  }
+
+  /* Participants list - more height */
+  .ep-participants-list {
+    max-height: calc(100vh - 450px) !important;
+  }
+
+  .ep-section .ep-participants-list {
+    max-height: 350px !important;
+  }
+
+  /* Section headers - larger */
+  .ep-section-header {
+    padding: 14px 16px !important;
+  }
+
+  .ep-section-header h3 {
+    font-size: 17px !important;
+  }
+
+  .ep-section-count {
+    font-size: 15px !important;
+    padding: 6px 14px !important;
+  }
+
+  /* Participant items - more spacing */
+  .ep-participant-item {
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+
+  /* Participant header - stack on mobile */
+  .ep-participant-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Participant name - larger */
+  .ep-participant-name {
+    font-size: 17px !important;
+    width: 100%;
+  }
+
+  .ep-checkin-time {
+    display: block;
+    margin-left: 0 !important;
+    margin-top: 4px;
+    font-size: 13px !important;
+  }
+
+  /* Participant actions - vertical stack */
+  .ep-participant-actions {
+    width: 100%;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Action buttons - full width, larger */
+  .ep-checkin-btn,
+  .ep-remove-checkin-btn,
+  .ep-upload-cert-btn {
+    width: 100% !important;
+    padding: 14px 16px !important;
+    font-size: 15px !important;
+    min-height: 48px !important;
+    border-radius: 8px !important;
+  }
+
+  .ep-participant-email-link {
+    width: 100% !important;
+    text-align: center;
+    padding: 14px 16px !important;
+    background: #f3f4f6;
+    border-radius: 8px;
+    font-size: 15px !important;
+    display: block;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Participant details - larger text */
+  .ep-participant-details {
+    font-size: 15px !important;
+    gap: 6px;
+  }
+
+  .ep-participant-email {
+    font-size: 14px !important;
+  }
+
+  /* Certificate column - larger */
+  .ep-certificate-column {
+    font-size: 14px !important;
+    padding: 12px;
+    background: #f9fafb;
+    border-radius: 6px;
+  }
+
+  /* Modal actions - stack vertically */
+  .ep-modal-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-top: 20px !important;
+  }
+
+  .ep-copy-emails-btn,
+  .ep-send-email-btn {
+    width: 100% !important;
+    padding: 16px 20px !important;
+    font-size: 16px !important;
+    min-height: 52px !important;
+  }
+
+  /* Dropdown menu - bottom sheet on mobile */
+  .ep-dropdown-menu {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    border-radius: 16px 16px 0 0 !important;
+    min-width: 100% !important;
+    animation: slideUpMobile 0.3s ease-out !important;
+    padding-bottom: max(0px, env(safe-area-inset-bottom)) !important;
+  }
+
+  @keyframes slideUpMobile {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .ep-dropdown-item {
+    padding: 18px 20px !important;
+    font-size: 16px !important;
+    min-height: 56px !important;
+  }
+
+  .ep-dropdown-item i {
+    font-size: 20px !important;
+  }
+
+  /* Evaluation toggle - full width */
+  .ep-evaluation-toggle-container {
+    width: 100%;
+    padding: 14px !important;
+    justify-content: space-between;
+  }
+
   .ep-toggle-label {
-    font-size: 12px;
+    font-size: 15px !important;
+  }
+
+  .ep-toggle-switch {
+    width: 54px !important;
+    height: 30px !important;
+  }
+
+  .ep-toggle-slider:before {
+    height: 24px !important;
+    width: 24px !important;
+  }
+
+  .ep-toggle-switch input:checked + .ep-toggle-slider:before {
+    transform: translateX(24px) !important;
+  }
+
+  /* Actions toggle button */
+  .ep-actions-toggle {
+    width: 100% !important;
+    height: 48px !important;
+    font-size: 20px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small screens - even larger touch targets */
+  .ep-modal-container {
+    padding: 12px !important;
+  }
+
+  .ep-modal-container h2 {
+    font-size: 20px !important;
+  }
+
+  .ep-participant-name {
+    font-size: 16px !important;
+  }
+
+  .ep-checkin-btn,
+  .ep-remove-checkin-btn,
+  .ep-upload-cert-btn {
+    padding: 16px !important;
+    font-size: 16px !important;
+    min-height: 52px !important;
+  }
+
+  .ep-section-header h3 {
+    font-size: 16px !important;
   }
 }

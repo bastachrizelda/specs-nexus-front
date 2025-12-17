@@ -940,58 +940,60 @@ const EventParticipantsModal = ({ show, participants = [], onClose, isLoading = 
                 </span>
               </div>
             )}
-            <div className="ep-actions-dropdown">
+            <div className="ep-scan-qr-wrapper">
               <button 
-                className="ep-actions-toggle"
-                onClick={() => setShowActionsDropdown(!showActionsDropdown)}
-                title="More actions"
+                className="ep-scan-qr-btn"
+                onClick={() => setShowQRScanner(true)}
+                title="Scan QR Code to check in student"
               >
-                <i className="fas fa-ellipsis-v"></i>
+                <i className="fas fa-qrcode"></i> Scan QR
               </button>
-              {showActionsDropdown && (
-                <>
-                  <div className="ep-dropdown-overlay" onClick={() => setShowActionsDropdown(false)} />
-                  <div className="ep-dropdown-menu">
-                    <button 
-                      className="ep-dropdown-item"
-                      onClick={() => { handleExportRegistrationList(); setShowActionsDropdown(false); }}
-                      disabled={isExporting || isLoading || participants.length === 0}
-                    >
-                      <i className="fas fa-list"></i> Registration List...
-                    </button>
-                    <button 
-                      className="ep-dropdown-item"
-                      onClick={() => { handleExportAttendance(); setShowActionsDropdown(false); }}
-                      disabled={isExporting || isLoading || participants.length === 0}
-                    >
-                      <i className="fas fa-file-excel"></i> Attendance...
-                    </button>
-                    <button 
-                      className="ep-dropdown-item"
-                      onClick={() => { document.getElementById('batch-certificate-upload').click(); setShowActionsDropdown(false); }}
-                      disabled={isBatchUploading || isLoading || eligibleParticipants.length === 0}
-                    >
-                      <i className="fas fa-certificate"></i> Batch Certificate...
-                    </button>
-                  </div>
-                </>
-              )}
-              <input
-                type="file"
-                id="batch-certificate-upload"
-                accept="image/*,application/pdf"
-                style={{ display: 'none' }}
-                onChange={(e) => handleBatchCertificateUpload(e.target.files[0])}
-                disabled={isBatchUploading}
-              />
+              <div className="ep-actions-dropdown">
+                <button 
+                  className="ep-actions-toggle"
+                  onClick={() => setShowActionsDropdown(!showActionsDropdown)}
+                  title="More actions"
+                >
+                  <i className="fas fa-ellipsis-v"></i>
+                </button>
+                {showActionsDropdown && (
+                  <>
+                    <div className="ep-dropdown-overlay" onClick={() => setShowActionsDropdown(false)} />
+                    <div className="ep-dropdown-menu">
+                      <button 
+                        className="ep-dropdown-item"
+                        onClick={() => { handleExportRegistrationList(); setShowActionsDropdown(false); }}
+                        disabled={isExporting || isLoading || participants.length === 0}
+                      >
+                        <i className="fas fa-list"></i> Registration List...
+                      </button>
+                      <button 
+                        className="ep-dropdown-item"
+                        onClick={() => { handleExportAttendance(); setShowActionsDropdown(false); }}
+                        disabled={isExporting || isLoading || participants.length === 0}
+                      >
+                        <i className="fas fa-file-excel"></i> Attendance...
+                      </button>
+                      <button 
+                        className="ep-dropdown-item"
+                        onClick={() => { document.getElementById('batch-certificate-upload').click(); setShowActionsDropdown(false); }}
+                        disabled={isBatchUploading || isLoading || eligibleParticipants.length === 0}
+                      >
+                        <i className="fas fa-certificate"></i> Batch Certificate...
+                      </button>
+                    </div>
+                  </>
+                )}
+                <input
+                  type="file"
+                  id="batch-certificate-upload"
+                  accept="image/*,application/pdf"
+                  style={{ display: 'none' }}
+                  onChange={(e) => handleBatchCertificateUpload(e.target.files[0])}
+                  disabled={isBatchUploading}
+                />
+              </div>
             </div>
-            <button 
-              className="ep-scan-qr-btn"
-              onClick={() => setShowQRScanner(true)}
-              title="Scan QR Code to check in student"
-            >
-              <i className="fas fa-qrcode"></i> Scan QR
-            </button>
           </div>
         </div>
 

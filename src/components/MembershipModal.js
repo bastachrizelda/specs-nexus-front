@@ -430,7 +430,7 @@ const MembershipModal = ({ membership, onClose, onReceiptUploaded }) => {
               </div>
               
               {currentMembership.receipt_path && (
-                <ReceiptPreview label="Receipt" receiptUrl={receiptPreviewUrl} />
+                <ReceiptPreview label="Receipt" receiptUrl={receiptPreviewUrl || currentMembership.receipt_path} />
               )}
             </div>
           ) : (
@@ -489,7 +489,7 @@ const MembershipModal = ({ membership, onClose, onReceiptUploaded }) => {
                     </div>
                   </div>
                   {currentMembership.receipt_path && (
-                    <ReceiptPreview label="Current Receipt" receiptUrl={receiptPreviewUrl} />
+                    <ReceiptPreview label="Current Receipt" receiptUrl={receiptPreviewUrl || currentMembership.receipt_path} />
                   )}
                 </>
               )}

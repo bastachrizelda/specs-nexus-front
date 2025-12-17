@@ -79,6 +79,7 @@ const EventsPage = () => {
   }, [token]);
 
   const handleCardClick = async (event) => {
+    console.log('EventCard clicked, event:', event);
     try {
       const res = await fetch(`${backendBaseUrl}/events/${event.id}/participants`, {
         headers: {
@@ -86,8 +87,10 @@ const EventsPage = () => {
         },
       });
       const participants = await res.json();
+      console.log('Setting selectedEvent with participants');
       setSelectedEvent({ ...event, participants });
     } catch (error) {
+      console.log('Error fetching participants, setting event anyway:', error);
       setSelectedEvent(event);
     }
   };
