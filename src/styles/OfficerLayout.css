@@ -19,6 +19,8 @@
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  position: relative;
+  z-index: 1001;
 }
 
 /* Content Wrapper - This is where pages render */

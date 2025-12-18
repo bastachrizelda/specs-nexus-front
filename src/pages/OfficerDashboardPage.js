@@ -363,7 +363,7 @@ const OfficerDashboardPage = () => {
         <div className="card">
           <div className="section-header" onClick={() => toggleSection('membership')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && toggleSection('membership')}>
             <h2>Student Insights</h2>
-            {collapsedSections.membership ? <FaChevronUp className="chevron-icon" /> : <FaChevronDown className="chevron-icon" />}
+            {collapsedSections.membership ? <FaChevronDown className="chevron-icon" /> : <FaChevronUp className="chevron-icon" />}
           </div>
           {!collapsedSections.membership && (
             sectionLoading.membership ? (
@@ -474,7 +474,7 @@ const OfficerDashboardPage = () => {
         <div className="card">
           <div className="section-header" onClick={() => toggleSection('payment')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && toggleSection('payment')}>
             <h2>Payment Analytics</h2>
-            {collapsedSections.payment ? <FaChevronUp className="chevron-icon" /> : <FaChevronDown className="chevron-icon" />}
+            {collapsedSections.payment ? <FaChevronDown className="chevron-icon" /> : <FaChevronUp className="chevron-icon" />}
           </div>
           {!collapsedSections.payment && (
             sectionLoading.payment ? (
@@ -592,7 +592,7 @@ const OfficerDashboardPage = () => {
         <div className="card">
           <div className="section-header" onClick={() => toggleSection('events')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && toggleSection('events')}>
             <h2>Events Engagement</h2>
-            {collapsedSections.events ? <FaChevronUp className="chevron-icon" /> : <FaChevronDown className="chevron-icon" />}
+            {collapsedSections.events ? <FaChevronDown className="chevron-icon" /> : <FaChevronUp className="chevron-icon" />}
           </div>
           {!collapsedSections.events && (
             sectionLoading.events ? (
@@ -663,7 +663,7 @@ const OfficerDashboardPage = () => {
         <div className="card">
           <div className="section-header" onClick={() => toggleSection('clearance')} role="button" tabIndex={0} onKeyDown={(e) => e.key === 'Enter' && toggleSection('clearance')}>
             <h2>Clearance Tracking</h2>
-            {collapsedSections.clearance ? <FaChevronUp className="chevron-icon" /> : <FaChevronDown className="chevron-icon" />}
+            {collapsedSections.clearance ? <FaChevronDown className="chevron-icon" /> : <FaChevronUp className="chevron-icon" />}
           </div>
           {!collapsedSections.clearance && (
             sectionLoading.clearance ? (

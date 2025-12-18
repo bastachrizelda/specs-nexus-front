@@ -377,6 +377,7 @@
   margin-top: auto;
   gap: 8px;
   position: relative;
+  min-height: 40px;
 }
 
 .cards-actions button:not(.menu-trigger-btn) {
@@ -495,6 +496,8 @@
 /* Three-dot menu wrapper */
 .card-menu-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 /* Three-dot menu trigger button */

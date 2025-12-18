@@ -619,9 +619,10 @@ const EventParticipantsModal = ({ show, participants = [], onClose, isLoading = 
       XLSX.utils.book_append_sheet(wb, ws, 'Registration List');
 
       // Create summary sheet
+      const PHILIPPINES_TZ = 'Asia/Manila';
       const summaryData = [
         { 'Metric': 'Event Title', 'Value': eventTitle || 'Event Registration List' },
-        { 'Metric': 'Export Date', 'Value': new Date().toLocaleString() },
+        { 'Metric': 'Export Date', 'Value': new Date().toLocaleString('en-US', { timeZone: PHILIPPINES_TZ }) },
         { 'Metric': 'Total Registered', 'Value': participants.length },
       ];
 
@@ -698,6 +699,7 @@ const EventParticipantsModal = ({ show, participants = [], onClose, isLoading = 
               year: 'numeric',
               hour: '2-digit',
               minute: '2-digit',
+              timeZone: 'Asia/Manila'
             })
           : '-',
       }));
@@ -781,9 +783,10 @@ const EventParticipantsModal = ({ show, participants = [], onClose, isLoading = 
       XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
 
       // Create summary sheet
+      const PHILIPPINES_TZ = 'Asia/Manila';
       const summaryData = [
         { 'Metric': 'Event Title', 'Value': eventTitle || 'Event Attendance Report' },
-        { 'Metric': 'Export Date', 'Value': new Date().toLocaleString() },
+        { 'Metric': 'Export Date', 'Value': new Date().toLocaleString('en-US', { timeZone: PHILIPPINES_TZ }) },
         { 'Metric': 'Total Registered', 'Value': participants.length },
         { 'Metric': 'Present', 'Value': presentParticipants.length },
         { 'Metric': 'Absent', 'Value': absentParticipants.length },
@@ -842,6 +845,7 @@ const EventParticipantsModal = ({ show, participants = [], onClose, isLoading = 
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
+                timeZone: 'Asia/Manila'
               })})
             </span>
           )}

@@ -9,6 +9,8 @@
   margin: 0 auto;
   box-sizing: border-box;
   min-height: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 /* Card styles */
@@ -32,6 +34,9 @@
   padding-bottom: 18px;
   border-bottom: 2px solid #e2e8f0;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
+  user-select: none;
 }
 
 .section-header h2 {
@@ -133,6 +138,8 @@
   padding: 24px;
   box-shadow: 0 2px 8px 0 rgba(14,63,24,0.07);
   border: 1.5px solid #e2e8f0;
+  position: relative;
+  z-index: 1;
 }
 
 .chart-box h4 {
@@ -140,6 +147,45 @@
   font-weight: 600;
   color: #1a2a44;
   margin-bottom: 18px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.chart-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.half-width {
+  flex: 1;
+  min-width: 300px;
+}
+
+.reset-chart-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #f47c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.reset-chart-btn:hover {
+  background: #fd8443;
 }
 
 /* Table box */

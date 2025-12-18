@@ -420,23 +420,30 @@ const OfficerManageEventsPage = () => {
   const formatEventDate = (dateString) => {
     if (!dateString) return { day: '', month: '', date: '', time: '', year: '' };
     const date = new Date(dateString);
+    const PHILIPPINES_TZ = 'Asia/Manila';
+    
     const options = { 
       month: 'short', 
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: PHILIPPINES_TZ
     };
     
     const timeOptions = {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZone: PHILIPPINES_TZ
     };
     
+    // Get date in Philippines timezone
+    const phDate = new Date(date.toLocaleString('en-US', { timeZone: PHILIPPINES_TZ }));
+    
     return {
-      day: date.getDate(),
-      month: date.toLocaleDateString('en-US', { month: 'short' }),
+      day: phDate.getDate(),
+      month: date.toLocaleDateString('en-US', { month: 'short', timeZone: PHILIPPINES_TZ }),
       date: date.toLocaleDateString('en-US', options),
       time: date.toLocaleTimeString('en-US', timeOptions),
-      year: date.getFullYear()
+      year: phDate.getFullYear()
     };
   };
 
@@ -621,6 +628,14 @@ const OfficerManageEventsPage = () => {
                                   </button>
                                 )
                               )}
+                              <button 
+                                className="edit-btn" 
+                                onClick={(e) => handleEdit(event, e)}
+                                title="Edit event"
+                              >
+                                <span>EDIT</span>
+                                <i className="fas fa-edit"></i>
+                              </button>
                               <div className="card-menu-wrapper">
                                 <button 
                                   className="menu-trigger-btn" 
@@ -631,16 +646,6 @@ const OfficerManageEventsPage = () => {
                                 </button>
                                 {dropdownOpen === event.id && (
                                   <div className="card-dropdown-menu">
-                                    <button 
-                                      className="dropdown-item edit-item" 
-                                      onClick={(e) => {
-                                        handleEdit(event, e);
-                                        setDropdownOpen(null);
-                                      }}
-                                    >
-                                      <i className="fas fa-edit"></i>
-                                      <span>Edit</span>
-                                    </button>
                                     <button 
                                       className="dropdown-item archive-item" 
                                       onClick={(e) => {

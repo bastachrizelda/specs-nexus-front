@@ -118,14 +118,12 @@ const MembershipModal = ({ membership, onClose, onReceiptUploaded }) => {
         setQrPreviewUrl(data.qr_code_url.trim());
       } else {
         setQrPreviewUrl(null);
-        setQrError(`No QR code available for ${activeTab}.`);
       }
     } catch (error) {
       if (error?.response?.status !== 404) {
         console.error("Failed to fetch QR code:", error);
       }
       setQrPreviewUrl(null);
-      setQrError(`No QR code available for ${activeTab}.`);
     } finally {
       setIsLoading(false);
     }

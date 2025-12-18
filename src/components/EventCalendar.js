@@ -7,9 +7,25 @@ const EventCalendar = ({ events = [], onEventClick }) => {
   const [hoveredEvent, setHoveredEvent] = useState(null);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
-  // Get start of week (Sunday)
+  // Philippines timezone constant
+  const PHILIPPINES_TZ = 'Asia/Manila';
+
+  // Convert any date to Philippines timezone
+  const toPhilippinesDate = (dateInput) => {
+    const date = new Date(dateInput);
+    // Convert to Philippines timezone string, then parse back to Date
+    const phString = date.toLocaleString('en-US', { timeZone: PHILIPPINES_TZ });
+    return new Date(phString);
+  };
+
+  // Get current date/time in Philippines timezone
+  const getPhilippinesToday = () => {
+    return toPhilippinesDate(new Date());
+  };
+
+  // Get start of week (Sunday) in Philippines timezone
   const getStartOfWeek = (date) => {
-    const d = new Date(date);
+    const d = toPhilippinesDate(date);
     const day = d.getDay();
     d.setDate(d.getDate() - day);
     d.setHours(0, 0, 0, 0);
@@ -50,16 +66,16 @@ const EventCalendar = ({ events = [], onEventClick }) => {
     return days;
   };
 
-  // Parse event dates and determine if multi-day
+  // Parse event dates and determine if multi-day (using Philippines timezone)
   const processedEvents = useMemo(() => {
     return events.map(event => {
-      const startDate = new Date(event.date);
+      const startDate = toPhilippinesDate(event.date);
       startDate.setHours(0, 0, 0, 0);
       
       // Check if event has registration_end as end date, otherwise single day
       let endDate;
       if (event.registration_end) {
-        endDate = new Date(event.registration_end);
+        endDate = toPhilippinesDate(event.registration_end);
         endDate.setHours(23, 59, 59, 999);
       } else {
         endDate = new Date(startDate);
@@ -138,29 +154,33 @@ const EventCalendar = ({ events = [], onEventClick }) => {
   };
 
   const goToToday = () => {
-    setCurrentDate(new Date());
+    setCurrentDate(getPhilippinesToday());
   };
 
-  // Get display title
+  // Get display title (Philippines timezone)
   const getTitle = () => {
     if (viewMode === 'month') {
-      return currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      return currentDate.toLocaleDateString('en-US', { 
+        month: 'long', 
+        year: 'numeric',
+        timeZone: PHILIPPINES_TZ
+      });
     } else {
       const weekStart = getStartOfWeek(currentDate);
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekEnd.getDate() + 6);
       
       if (weekStart.getMonth() === weekEnd.getMonth()) {
-        return `${weekStart.toLocaleDateString('en-US', { month: 'long' })} ${weekStart.getDate()} - ${weekEnd.getDate()}, ${weekStart.getFullYear()}`;
+        return `${weekStart.toLocaleDateString('en-US', { month: 'long', timeZone: PHILIPPINES_TZ })} ${weekStart.getDate()} - ${weekEnd.getDate()}, ${weekStart.getFullYear()}`;
       } else {
-        return `${weekStart.toLocaleDateString('en-US', { month: 'short' })} ${weekStart.getDate()} - ${weekEnd.toLocaleDateString('en-US', { month: 'short' })} ${weekEnd.getDate()}, ${weekEnd.getFullYear()}`;
+        return `${weekStart.toLocaleDateString('en-US', { month: 'short', timeZone: PHILIPPINES_TZ })} ${weekStart.getDate()} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', timeZone: PHILIPPINES_TZ })} ${weekEnd.getDate()}, ${weekEnd.getFullYear()}`;
       }
     }
   };
 
   const days = viewMode === 'month' ? getMonthDays(currentDate) : getWeekDays(currentDate);
   const weekDayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const today = new Date();
+  const today = getPhilippinesToday();
   today.setHours(0, 0, 0, 0);
 
   // Get event color based on status
@@ -196,21 +216,23 @@ const EventCalendar = ({ events = [], onEventClick }) => {
     setHoveredEvent(null);
   };
 
-  // Format time for display
+  // Format time for display (Philippines timezone)
   const formatEventTime = (dateString) => {
     return new Date(dateString).toLocaleTimeString('en-US', { 
       hour: 'numeric', 
       minute: '2-digit',
-      hour12: true 
+      hour12: true,
+      timeZone: PHILIPPINES_TZ
     });
   };
 
-  // Format date for tooltip
+  // Format date for tooltip (Philippines timezone)
   const formatEventDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', { 
       weekday: 'short',
       month: 'short', 
-      day: 'numeric'
+      day: 'numeric',
+      timeZone: PHILIPPINES_TZ
     });
   };
 

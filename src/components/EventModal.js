@@ -94,14 +94,16 @@ const EventModal = ({ event, onClose, onParticipate, onNotParticipate, isOfficer
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Not specified';
+    const PHILIPPINES_TZ = 'Asia/Manila';
     const options = { 
       year: 'numeric', 
       month: 'short', 
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: PHILIPPINES_TZ
     };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
   const getRegistrationStatus = (status) => {
