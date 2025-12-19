@@ -1,29 +1,39 @@
+/* Layout container */
 .layout-container {
   display: flex;
-  height: 100vh;
-  background-color: #f9f9f9;
+  min-height: 100vh;
   position: relative;
-  overflow: hidden;
+  background-color: #f8fafc;
+  overflow-x: hidden;
+  width: 100%;
 }
 
+/* Main Content Area */
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s ease;
+  transition: all 0.3s ease;
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  background-color: #f8fafc;
 }
 
+/* Content Wrapper */
 .content-wrapper {
   flex: 1;
-  padding: .75rem;
+  padding: 1.5rem;
   overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
+  background-color: #f8fafc;
+  position: relative;
   height: calc(100vh - 60px);
+  -webkit-overflow-scrolling: touch;
 }
 
+/* Sidebar Overlay for Mobile */
 .sidebar-overlay-ss {
   position: fixed;
   top: 0;
@@ -31,30 +41,66 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 99;
+  z-index: 999;
+  display: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
-/* Desktop defaults */
+/* Desktop styles */
 @media (min-width: 769px) {
   .main-content {
     margin-left: 220px;
   }
   
   .layout-container:not(.sidebar-open) .main-content {
-    margin-left: 60px;
+    margin-left: 64px;
+  }
+  
+  .sidebar {
+    transform: translateX(0) !important;
   }
 }
 
 /* Tablet and mobile */
 @media (max-width: 768px) {
   .main-content {
-    margin-left: 60px;
+    margin-left: 0;
+    transform: translateX(0);
+    transition: transform 0.3s ease;
+    width: 100%;
   }
   
+  /* Sidebar open state */
   .layout-container.sidebar-open .main-content {
-    margin-left: 220px;
+    transform: translateX(220px);
   }
   
+  /* Show overlay when sidebar is open */
+  .layout-container.sidebar-open .sidebar-overlay-ss {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* Sidebar styles */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .layout-container.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+  
+  /* Adjust content padding for mobile */
   .content-wrapper {
     padding: 1rem;
   }
@@ -66,7 +112,17 @@
     padding: 0.75rem;
   }
   
+  /* Adjust sidebar width for very small screens */
+  .sidebar {
+    width: 85%;
+    max-width: 300px;
+  }
+  
+  .sidebar.collapsed {
+    width: 64px;
+  }
+  
   .layout-container.sidebar-open .main-content {
-    margin-left: 0;
+    transform: translateX(85%);
   }
 }
