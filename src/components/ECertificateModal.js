@@ -16,8 +16,10 @@ const ECertificateModal = ({ certificate, onClose, show = false }) => {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: 'Asia/Manila',
+      hour12: true
     };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleString('en-PH', options);
   };
 
   const isPdf = certificate.certificate_url && certificate.certificate_url.toLowerCase().endsWith('.pdf');

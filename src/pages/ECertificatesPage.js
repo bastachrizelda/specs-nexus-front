@@ -205,10 +205,11 @@ const ECertificatesPage = () => {
                       <i className="fas fa-calendar-alt v-e-certificate-icon"></i>
                       <span>
                         {certificate.issued_date
-                          ? new Date(certificate.issued_date).toLocaleDateString('en-US', {
+                          ? new Date(certificate.issued_date).toLocaleDateString('en-PH', {
                               month: 'short',
                               day: 'numeric',
                               year: 'numeric',
+                              timeZone: 'Asia/Manila'
                             })
                           : 'Unknown Date'}
                       </span>
