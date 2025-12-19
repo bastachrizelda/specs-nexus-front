@@ -25,7 +25,7 @@ export const exportFinancialRecordsToXlsx = async (records) => {
   const today = new Date();
   const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
 
-  // Format payment date for export
+  // Format payment date for export (Philippine Time)
   const formatPaymentDate = (dateValue) => {
     if (!dateValue) return '-';
     const date = new Date(dateValue);
@@ -35,6 +35,7 @@ export const exportFinancialRecordsToXlsx = async (records) => {
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: 'Asia/Manila'
     });
   };
 
@@ -154,7 +155,7 @@ export const exportFinancialRecordsToXlsx = async (records) => {
 
   const summaryData = [
     { 'Metric': 'Report Title', 'Value': 'Financial Records - Membership Payments' },
-    { 'Metric': 'Export Date', 'Value': new Date().toLocaleString() },
+    { 'Metric': 'Export Date', 'Value': new Date().toLocaleString('en-US', { timeZone: 'Asia/Manila' }) },
     { 'Metric': 'Total Paid Members', 'Value': paidRecords.length },
     { 'Metric': '1st Semester Payments', 'Value': firstSemCount },
     { 'Metric': '2nd Semester Payments', 'Value': secondSemCount },

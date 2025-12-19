@@ -341,7 +341,16 @@ const MembershipModal = ({ membership, onClose, onReceiptUploaded }) => {
   };
 
   const formatDate = (date) => {
-    return date ? new Date(date).toLocaleString('en-PH', { timeZone: 'Asia/Manila' }) : "N/A";
+    if (!date) return "N/A";
+    return new Date(date).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'Asia/Manila'
+    });
   };
 
   const openFullReceiptModal = (url) => {

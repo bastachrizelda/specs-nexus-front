@@ -34,7 +34,7 @@ const Header = ({ toggleSidebar, isSidebarOpen, isMobile }) => {
     };
   }, []);
   
-  // Format the date and time
+  // Format the date and time in Philippine Time (Asia/Manila)
   const formatDateTime = () => {
     const options = { 
       weekday: 'long', 
@@ -43,10 +43,11 @@ const Header = ({ toggleSidebar, isSidebarOpen, isMobile }) => {
       year: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
+      timeZone: 'Asia/Manila'
     };
     
-    return currentDateTime.toLocaleDateString('en-US', options);
+    return currentDateTime.toLocaleString('en-US', options).replace(',', ' at');
   };
   
   return (
