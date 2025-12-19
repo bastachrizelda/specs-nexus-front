@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import StatusModal from './StatusModal';
 import QRScanner from './QRScanner';
@@ -914,7 +915,7 @@ const EventParticipantsModal = ({ show, participants = [], onClose, isLoading = 
     </div>
   );
 
-  return (
+  return ReactDOM.createPortal(
     <div className="ep-modal-overlay">
       <div className="ep-modal-container">
         <button
@@ -1096,7 +1097,8 @@ const EventParticipantsModal = ({ show, participants = [], onClose, isLoading = 
         eventId={eventId}
         onCheckInSuccess={onRefresh}
       />
-    </div>
+    </div>,
+    document.body
   );
 };
 

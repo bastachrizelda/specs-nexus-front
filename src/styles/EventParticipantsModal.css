@@ -10,7 +10,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 1500;
   font-family: 'Poppins', sans-serif;
 }
 
@@ -25,6 +25,7 @@
   position: relative;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   animation: slideIn 0.3s ease-out;
+  z-index: 1501;
 }
 
 @keyframes slideIn {
@@ -550,7 +551,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 999;
+  z-index: 1499;
 }
 
 .ep-dropdown-menu {
@@ -561,7 +562,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   min-width: 220px;
-  z-index: 1000;
+  z-index: 1501;
   overflow: hidden;
   animation: dropdownSlideIn 0.2s ease-out;
 }

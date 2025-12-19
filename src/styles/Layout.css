@@ -15,10 +15,11 @@
   flex-direction: column;
   transition: all 0.3s ease;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   position: relative;
   z-index: 1;
   background-color: #f8fafc;
+  overflow: hidden;
 }
 
 /* Content Wrapper */

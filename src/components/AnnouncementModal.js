@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import '../styles/AnnouncementModal.css';
 
 const backendBaseUrl = 'https://specs-nexus-production.up.railway.app';
-const AnnouncementModal = ({ announcement, onClose }) => {
+const AnnouncementModal = ({ announcement, onClose, show }) => {
   const [showFullImage, setShowFullImage] = useState(false);
   
-  if (!announcement) return null;
+  if (!announcement || !show) return null;
 
   const imageUrl =
     announcement.image_url && announcement.image_url.startsWith("http")

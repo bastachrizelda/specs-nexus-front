@@ -122,7 +122,14 @@ const OfficerAnnouncementModal = ({ show, onClose, onSave, initialAnnouncement }
       location: setLocation,
     };
     setters[field](value);
-    validateForm();
+    // Clear error for the field being edited
+    if (errors[field]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
   };
 
   const handleFileChange = (e) => {
@@ -175,7 +182,18 @@ const OfficerAnnouncementModal = ({ show, onClose, onSave, initialAnnouncement }
       const formData = new FormData();
       formData.append('title', title);
       formData.append('description', description);
-      formData.append('date', new Date(dateTime).toISOString());
+      
+      // Convert datetime-local value to Manila timezone ISO string
+      // datetime-local gives us YYYY-MM-DDTHH:mm format in local browser time
+      // We need to treat this as Manila time and convert to ISO
+      const manilaDate = new Date(dateTime + ':00'); // Add seconds if not present
+      const manilaOffset = 8 * 60; // Manila is UTC+8
+      const localOffset = manilaDate.getTimezoneOffset();
+      const offsetDiff = localOffset + manilaOffset;
+      const manilaTimestamp = manilaDate.getTime() - (offsetDiff * 60 * 1000);
+      const manilaISOString = new Date(manilaTimestamp).toISOString();
+      
+      formData.append('date', manilaISOString);
       formData.append('location', location);
       if (imageFile) {
         const sanitizedFileName = imageFile.name.replace(/\s+/g, '_');
@@ -354,7 +372,7 @@ className={errors.location ? 'z-input-error' : ''}
               <button type="button" className="z-btn-cancel" onClick={onClose}>
                 Cancel
               </button>
-              <button type="submit" className="z-btn-save" disabled={Object.keys(errors).length > 0}>
+              <button type="submit" className="z-btn-save">
                 <i className="fas fa-save"></i> Save
               </button>
             </div>
