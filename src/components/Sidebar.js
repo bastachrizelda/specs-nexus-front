@@ -7,7 +7,6 @@ import {
   FaBullhorn, 
   FaMoneyBill, 
   FaSignOutAlt,
-  FaBars,
   FaCertificate 
 } from 'react-icons/fa';
 import '../styles/Sidebar.css';
@@ -19,17 +18,6 @@ const Sidebar = ({ user, isOpen, isMobile, onToggle, onOpenLogoutModal }) => {
 
   return (
     <div className={sidebarClass}>
-      {isMobile && (
-        <div className="hamburger-container">
-          <button 
-            className="hamburger-btn" 
-            onClick={onToggle} 
-            >
-            <FaBars className="hamburger-icon" />
-          </button>
-        </div>
-      )}
-      
       <div className="profile-container">
         <div className="profile-icon">
           <FaUser />

@@ -26,33 +26,6 @@
   width: 64px;
 }
 
-.hamburger-container {
-  padding: 0.5rem 1rem;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.hamburger-btn {
-  background: none;
-  border: none;
-  color: #b6e2c6;
-  cursor: pointer;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.7rem;
-  transition: color 0.18s;
-}
-
-.hamburger-btn:hover {
-  color: #fff;
-}
-
-.hamburger-icon {
-  font-size: 1.5rem;
-}
-
 .logo-container {
   padding: 0.5rem 1rem 2rem 1rem;
   text-align: center;
@@ -243,21 +216,6 @@ nav ul li a:active .nav-icon {
   padding: 0.85rem;
 }
 
-.sidebar.collapsed .hamburger-container {
-  justify-content: center;
-}
-
-.sidebar.collapsed .hamburger-btn {
-  padding: 0.5rem;
-}
-
-/* Hide hamburger button on desktop */
-@media (min-width: 769px) {
-  .hamburger-container {
-    display: none;
-  }
-}
-
 /* Mobile Styles */
 @media (max-width: 768px) {
   .sidebar {
@@ -266,46 +224,21 @@ nav ul li a:active .nav-icon {
     top: 0;
     bottom: 0;
     z-index: 1000;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
     transform: translateX(-100%);
-    transition: transform 0.3s ease, width 0.3s ease;
-    width: 220px;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 240px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
   
+  /* On mobile, always show sidebar as expanded when visible */
   .sidebar.collapsed {
-    width: 64px;
-    transform: translateX(-100%);
+    width: 240px;
   }
   
   .layout-container.sidebar-open .sidebar {
     transform: translateX(0);
-  }
-  
-  .hamburger-container {
-    padding: 1rem 0.75rem;
-    display: flex;
-    justify-content: flex-start;
-    position: relative;
-    z-index: 1001;
-  }
-  
-  .hamburger-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s ease;
-  }
-  
-  .hamburger-btn:hover {
-    color: #b6e2c6;
   }
   
   /* Adjust logo and profile for mobile */
@@ -314,17 +247,32 @@ nav ul li a:active .nav-icon {
   }
   
   .profile-container {
-    padding: 0.5rem 0.75rem 1.5rem;
+    padding: 0.75rem 0.75rem 1.5rem;
   }
   
-  /* Adjust nav items for mobile */
+  /* Show all nav text on mobile even when collapsed */
+  .sidebar.collapsed .nav-text,
+  .sidebar.collapsed .user-info {
+    display: block;
+  }
+  
+  /* Adjust nav items for mobile with better tap targets */
   nav ul li a {
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
   }
   
   .nav-icon {
-    font-size: 1.25rem !important;
+    font-size: 1.3rem !important;
+  }
+  
+  /* Logout button proper sizing for touch */
+  .logout-btn {
+    min-height: 48px;
+    padding: 0.85rem 1.5rem;
   }
 }
 
@@ -337,7 +285,6 @@ nav ul li a:active .nav-icon {
 .user-info p,
 nav ul li a,
 .logout-btn,
-.hamburger-btn,
 .nav-text,
 .nav-icon {
   font-family: 'Poppins', sans-serif !important;

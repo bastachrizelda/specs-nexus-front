@@ -10,15 +10,17 @@ const AnnouncementCard = ({ announcement, onClick }) => {
         ? `${backendBaseUrl}${announcement.image_url}`
         : "/default_announcement.png";
 
-  // Format date for display in card
+  // Format date for display in card (Philippine Time - Asia/Manila)
   const formatAnnouncementDate = (dateString) => {
     if (!dateString) return { day: '', month: '' };
     
     const date = new Date(dateString);
+    const phOptions = { timeZone: 'Asia/Manila' };
+    
     return {
-      day: date.getDate(),
-      month: date.toLocaleDateString('en-US', { month: 'short' }),
-      time: date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })
+      day: date.toLocaleDateString('en-PH', { ...phOptions, day: 'numeric' }),
+      month: date.toLocaleDateString('en-PH', { ...phOptions, month: 'short' }),
+      time: date.toLocaleTimeString('en-PH', { ...phOptions, hour: 'numeric', minute: '2-digit', hour12: true })
     };
   };
   

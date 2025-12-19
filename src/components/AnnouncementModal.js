@@ -22,9 +22,11 @@ const AnnouncementModal = ({ announcement, onClose }) => {
       month: 'short', 
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'Asia/Manila'
     };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+    return new Date(dateString).toLocaleString('en-PH', options);
   };
 
   return (

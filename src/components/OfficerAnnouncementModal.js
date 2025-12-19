@@ -31,11 +31,37 @@ const OfficerAnnouncementModal = ({ show, onClose, onSave, initialAnnouncement }
   });
   const fileInputRef = useRef(null);
 
+  // Convert date to Manila timezone for datetime-local input
+  const formatDateToManilaInput = (dateInput) => {
+    if (!dateInput) return '';
+    const date = new Date(dateInput);
+    if (isNaN(date.getTime())) return '';
+    
+    const formatter = new Intl.DateTimeFormat('en-CA', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Asia/Manila'
+    });
+    
+    const parts = formatter.formatToParts(date);
+    const year = parts.find(p => p.type === 'year').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const day = parts.find(p => p.type === 'day').value;
+    const hour = parts.find(p => p.type === 'hour').value;
+    const minute = parts.find(p => p.type === 'minute').value;
+    
+    return `${year}-${month}-${day}T${hour}:${minute}`;
+  };
+
   useEffect(() => {
     if (initialAnnouncement) {
       setTitle(initialAnnouncement.title || '');
       setDescription(initialAnnouncement.description || '');
-      setDateTime(initialAnnouncement.date ? initialAnnouncement.date.slice(0, 16) : '');
+      setDateTime(formatDateToManilaInput(initialAnnouncement.date));
       setLocation(initialAnnouncement.location || '');
       setImageFile(null);
       setPreviewUrl(initialAnnouncement.image_url || '');
